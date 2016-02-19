@@ -29,6 +29,11 @@ abstract class BaseView[Entity](tag: Tag, val viewName: String) extends BaseTabl
   def columnByName(name: String): Column[_] =
     columnsMap(name).apply(this)
 
+
+  def typedColumnByName[T](name: String): Column[T] =
+    columnsMap(name).apply(this).asInstanceOf[Column[T]]
+
+
   /**
    * column that is tread as view 'id' - it is use eg. for default sort
    */

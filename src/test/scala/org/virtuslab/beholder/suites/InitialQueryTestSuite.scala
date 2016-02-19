@@ -1,4 +1,5 @@
 package org.virtuslab.beholder.suites
+/*
 
 import java.sql.Date
 
@@ -66,3 +67,4 @@ trait InitialQueryTestSuite[Formatter] extends FiltersTestSuite[Formatter] {
   }
 
 }
+*/

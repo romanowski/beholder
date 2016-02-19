@@ -1,4 +1,5 @@
 package org.virtuslab.beholder
+/*
 
 import java.sql.Date
 
@@ -49,4 +50,4 @@ class JsonFiltersRangeTests extends AppTest with RangeFiltersSuite[JsonFormatter
       inRange(inField[Date]("date")),
       inOptionRange(inField[BigDecimal]("number"))
     )
-}
+}*/

@@ -1,4 +1,5 @@
 package org.virtuslab.beholder.json
+/*
 
 import java.sql.Date
 
@@ -61,3 +62,4 @@ class JsonFormatterTest extends AppTest with UserMachinesView with ModelIncluded
 
   }*/
 }
+*/

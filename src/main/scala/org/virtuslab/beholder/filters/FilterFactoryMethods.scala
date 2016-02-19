@@ -6,9 +6,9 @@ import org.virtuslab.unicorn.LongUnicornPlay
 import scala.language.higherKinds
 import scala.slick.ast.TypedType
 import scala.slick.lifted.TableQuery
-
-abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField[_, _], Formatter] {
 /*
+abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField[_, _], Formatter] {
+
   def createFormatter(table: BaseFilter[_, _, _, FieldType[_, _], Formatter]): Formatter
 
   def create[A1: TypedType, A2: TypedType, A3: TypedType, B1, B2, B3, T <: BaseView3[Entity, A1, A2, A3]](
@@ -484,3 +484,4 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
   }
 
 }
+*/

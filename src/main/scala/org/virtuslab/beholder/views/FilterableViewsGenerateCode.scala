@@ -1119,7 +1119,7 @@ private[beholder] trait FilterableViewsGenerateCode {
       apply: (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19) => T,
       unapply: T => Option[(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19)],
       val query: Query[_, T, Seq]
-  ) extends BaseView[A1, T](tag, name) {
+  ) extends BaseView[T](tag, name) {
     def c1 = column[A1](columnNames(0))
     def c2 = column[A2](columnNames(1))
     def c3 = column[A3](columnNames(2))
@@ -1203,7 +1203,7 @@ private[beholder] trait FilterableViewsGenerateCode {
       apply: (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20) => T,
       unapply: T => Option[(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20)],
       val query: Query[_, T, Seq]
-  ) extends BaseView[A1, T](tag, name) {
+  ) extends BaseView[T](tag, name) {
     def c1 = column[A1](columnNames(0))
     def c2 = column[A2](columnNames(1))
     def c3 = column[A3](columnNames(2))
@@ -1289,7 +1289,7 @@ private[beholder] trait FilterableViewsGenerateCode {
       apply: (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21) => T,
       unapply: T => Option[(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21)],
       val query: Query[_, T, Seq]
-  ) extends BaseView[A1, T](tag, name) {
+  ) extends BaseView[T](tag, name) {
     def c1 = column[A1](columnNames(0))
     def c2 = column[A2](columnNames(1))
     def c3 = column[A3](columnNames(2))
@@ -1377,7 +1377,7 @@ private[beholder] trait FilterableViewsGenerateCode {
       apply: (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21, A22) => T,
       unapply: T => Option[(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21, A22)],
       val query: Query[_, T, Seq]
-  ) extends BaseView[A1, T](tag, name) {
+  ) extends BaseView[T](tag, name) {
     def c1 = column[A1](columnNames(0))
     def c2 = column[A2](columnNames(1))
     def c3 = column[A3](columnNames(2))

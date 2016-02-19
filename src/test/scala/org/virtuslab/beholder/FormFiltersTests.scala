@@ -2,12 +2,7 @@ package org.virtuslab.beholder
 
 import java.sql.Date
 
-import org.virtuslab.beholder.filters.forms.FromFilterFields._
-import org.virtuslab.beholder.filters.forms.{ FormFilters, FormFormatter, FromFilterFields }
-import org.virtuslab.beholder.filters.{ FilterAPI, FilterDefinition }
-import org.virtuslab.beholder.suites.{ InitialQueryTestSuite, BaseSuite, FiltersTestSuite, RangeFiltersSuite }
-import org.virtuslab.unicorn.LongUnicornPlay._
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+
 /*
 
 trait FormFiltersTestsBase {

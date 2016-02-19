@@ -1,9 +1,7 @@
 package org.virtuslab.beholder.filters.json
 
-import org.virtuslab.beholder.filters.{ ContextedFilterAPI, FilterAPI, FilterDefinition, FilterResult }
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple.Session
-import play.api.libs.json.{ JsSuccess, JsResult, JsError, JsValue }
-import play.api.mvc._
+
+/*
 
 trait FilterControllerBase[Context, Entity <: Product] extends Controller {
   private[beholder] def formatter: JsonFormatter[Entity]
@@ -54,4 +52,4 @@ abstract class ContextFilterController[Context, Entity <: Product](contextedFilt
   }
 
   protected def sessionFromContext(context: Context): Session
-}
+}*/
