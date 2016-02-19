@@ -2,14 +2,13 @@ package org.virtuslab.beholder.filters
 
 import org.virtuslab.beholder.views.FilterableViews._
 import org.virtuslab.unicorn.LongUnicornPlay
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
 
 import scala.language.higherKinds
 import scala.slick.ast.TypedType
 import scala.slick.lifted.TableQuery
 
 abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField[_, _], Formatter] {
-
+/*
   def createFormatter(table: BaseFilter[_, _, _, FieldType[_, _], Formatter]): Formatter
 
   def create[A1: TypedType, A2: TypedType, A3: TypedType, B1, B2, B3, T <: BaseView3[Entity, A1, A2, A3]](
@@ -17,9 +16,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c1Mapping: FieldType[A1, B1],
     c2Mapping: FieldType[A2, B2],
     c3Mapping: FieldType[A3, B3]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): LightFilter[Entity, Formatter, T] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(3)(None)
@@ -39,9 +39,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c2Mapping: FieldType[A2, B2],
     c3Mapping: FieldType[A3, B3],
     c4Mapping: FieldType[A4, B4]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): LightFilter[Entity, Formatter, T] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(4)(None)
@@ -62,9 +63,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c3Mapping: FieldType[A3, B3],
     c4Mapping: FieldType[A4, B4],
     c5Mapping: FieldType[A5, B5]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): LightFilter[Entity, Formatter, T] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(5)(None)
@@ -86,9 +88,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c4Mapping: FieldType[A4, B4],
     c5Mapping: FieldType[A5, B5],
     c6Mapping: FieldType[A6, B6]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): LightFilter[Entity, Formatter, T] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(6)(None)
@@ -111,9 +114,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c5Mapping: FieldType[A5, B5],
     c6Mapping: FieldType[A6, B6],
     c7Mapping: FieldType[A7, B7]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): LightFilter[Entity, Formatter, T] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(7)(None)
@@ -137,9 +141,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c6Mapping: FieldType[A6, B6],
     c7Mapping: FieldType[A7, B7],
     c8Mapping: FieldType[A8, B8]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(8)(None)
@@ -164,9 +169,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c7Mapping: FieldType[A7, B7],
     c8Mapping: FieldType[A8, B8],
     c9Mapping: FieldType[A9, B9]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(9)(None)
@@ -192,9 +198,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c8Mapping: FieldType[A8, B8],
     c9Mapping: FieldType[A9, B9],
     c10Mapping: FieldType[A10, B10]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(10)(None)
@@ -221,9 +228,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c9Mapping: FieldType[A9, B9],
     c10Mapping: FieldType[A10, B10],
     c11Mapping: FieldType[A11, B11]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(11)(None)
@@ -251,9 +259,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c10Mapping: FieldType[A10, B10],
     c11Mapping: FieldType[A11, B11],
     c12Mapping: FieldType[A12, B12]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(12)(None)
@@ -282,9 +291,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c11Mapping: FieldType[A11, B11],
     c12Mapping: FieldType[A12, B12],
     c13Mapping: FieldType[A13, B13]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(13)(None)
@@ -314,9 +324,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c12Mapping: FieldType[A12, B12],
     c13Mapping: FieldType[A13, B13],
     c14Mapping: FieldType[A14, B14]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(14)(None)
@@ -347,9 +358,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c13Mapping: FieldType[A13, B13],
     c14Mapping: FieldType[A14, B14],
     c15Mapping: FieldType[A15, B15]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(15)(None)
@@ -381,9 +393,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c14Mapping: FieldType[A14, B14],
     c15Mapping: FieldType[A15, B15],
     c16Mapping: FieldType[A16, B16]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(16)(None)
@@ -416,9 +429,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c15Mapping: FieldType[A15, B15],
     c16Mapping: FieldType[A16, B16],
     c17Mapping: FieldType[A17, B17]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(17)(None)
@@ -452,9 +466,10 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
     c16Mapping: FieldType[A16, B16],
     c17Mapping: FieldType[A17, B17],
     c18Mapping: FieldType[A18, B18]
-  ): TableFilterAPI[Entity, Formatter, T] = {
+  ): FilterAPI[Entity, Formatter] = {
 
     new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
+
       override val formatter: Formatter = createFormatter(this)
 
       override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(18)(None)
@@ -464,160 +479,6 @@ abstract class FilterFactoryMethods[Entity, FieldType[_, _] <: MappedFilterField
 
       override protected def tableColumns(table: T): Seq[LongUnicornPlay.driver.simple.Column[_]] = Seq(
         table.c1, table.c2, table.c3, table.c4, table.c5, table.c6, table.c7, table.c8, table.c9, table.c10, table.c11, table.c12, table.c13, table.c14, table.c15, table.c16, table.c17, table.c18
-      )
-    }
-  }
-
-  def create[A1: TypedType, A2: TypedType, A3: TypedType, A4: TypedType, A5: TypedType, A6: TypedType, A7: TypedType, A8: TypedType, A9: TypedType, A10: TypedType, A11: TypedType, A12: TypedType, A13: TypedType, A14: TypedType, A15: TypedType, A16: TypedType, A17: TypedType, A18: TypedType, A19: TypedType, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, T <: BaseView19[Entity, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19]](
-    table: TableQuery[T],
-    c1Mapping: FieldType[A1, B1],
-    c2Mapping: FieldType[A2, B2],
-    c3Mapping: FieldType[A3, B3],
-    c4Mapping: FieldType[A4, B4],
-    c5Mapping: FieldType[A5, B5],
-    c6Mapping: FieldType[A6, B6],
-    c7Mapping: FieldType[A7, B7],
-    c8Mapping: FieldType[A8, B8],
-    c9Mapping: FieldType[A9, B9],
-    c10Mapping: FieldType[A10, B10],
-    c11Mapping: FieldType[A11, B11],
-    c12Mapping: FieldType[A12, B12],
-    c13Mapping: FieldType[A13, B13],
-    c14Mapping: FieldType[A14, B14],
-    c15Mapping: FieldType[A15, B15],
-    c16Mapping: FieldType[A16, B16],
-    c17Mapping: FieldType[A17, B17],
-    c18Mapping: FieldType[A18, B18],
-    c19Mapping: FieldType[A19, B19]
-  ): TableFilterAPI[Entity, Formatter, T] = {
-
-    new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
-      override val formatter: Formatter = createFormatter(this)
-
-      override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(19)(None)
-
-      override def filterFields: Seq[FieldType[_, _]] =
-        Seq[FieldType[_, _]](c1Mapping, c2Mapping, c3Mapping, c4Mapping, c5Mapping, c6Mapping, c7Mapping, c8Mapping, c9Mapping, c10Mapping, c11Mapping, c12Mapping, c13Mapping, c14Mapping, c15Mapping, c16Mapping, c17Mapping, c18Mapping, c19Mapping)
-
-      override protected def tableColumns(table: T): Seq[LongUnicornPlay.driver.simple.Column[_]] = Seq(
-        table.c1, table.c2, table.c3, table.c4, table.c5, table.c6, table.c7, table.c8, table.c9, table.c10, table.c11, table.c12, table.c13, table.c14, table.c15, table.c16, table.c17, table.c18, table.c19
-      )
-    }
-  }
-
-  def create[A1: TypedType, A2: TypedType, A3: TypedType, A4: TypedType, A5: TypedType, A6: TypedType, A7: TypedType, A8: TypedType, A9: TypedType, A10: TypedType, A11: TypedType, A12: TypedType, A13: TypedType, A14: TypedType, A15: TypedType, A16: TypedType, A17: TypedType, A18: TypedType, A19: TypedType, A20: TypedType, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, T <: BaseView20[Entity, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20]](
-    table: TableQuery[T],
-    c1Mapping: FieldType[A1, B1],
-    c2Mapping: FieldType[A2, B2],
-    c3Mapping: FieldType[A3, B3],
-    c4Mapping: FieldType[A4, B4],
-    c5Mapping: FieldType[A5, B5],
-    c6Mapping: FieldType[A6, B6],
-    c7Mapping: FieldType[A7, B7],
-    c8Mapping: FieldType[A8, B8],
-    c9Mapping: FieldType[A9, B9],
-    c10Mapping: FieldType[A10, B10],
-    c11Mapping: FieldType[A11, B11],
-    c12Mapping: FieldType[A12, B12],
-    c13Mapping: FieldType[A13, B13],
-    c14Mapping: FieldType[A14, B14],
-    c15Mapping: FieldType[A15, B15],
-    c16Mapping: FieldType[A16, B16],
-    c17Mapping: FieldType[A17, B17],
-    c18Mapping: FieldType[A18, B18],
-    c19Mapping: FieldType[A19, B19],
-    c20Mapping: FieldType[A20, B20]
-  ): TableFilterAPI[Entity, Formatter, T] = {
-
-    new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
-      override val formatter: Formatter = createFormatter(this)
-
-      override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(20)(None)
-
-      override def filterFields: Seq[FieldType[_, _]] =
-        Seq[FieldType[_, _]](c1Mapping, c2Mapping, c3Mapping, c4Mapping, c5Mapping, c6Mapping, c7Mapping, c8Mapping, c9Mapping, c10Mapping, c11Mapping, c12Mapping, c13Mapping, c14Mapping, c15Mapping, c16Mapping, c17Mapping, c18Mapping, c19Mapping, c20Mapping)
-
-      override protected def tableColumns(table: T): Seq[LongUnicornPlay.driver.simple.Column[_]] = Seq(
-        table.c1, table.c2, table.c3, table.c4, table.c5, table.c6, table.c7, table.c8, table.c9, table.c10, table.c11, table.c12, table.c13, table.c14, table.c15, table.c16, table.c17, table.c18, table.c19, table.c20
-      )
-    }
-  }
-
-  def create[A1: TypedType, A2: TypedType, A3: TypedType, A4: TypedType, A5: TypedType, A6: TypedType, A7: TypedType, A8: TypedType, A9: TypedType, A10: TypedType, A11: TypedType, A12: TypedType, A13: TypedType, A14: TypedType, A15: TypedType, A16: TypedType, A17: TypedType, A18: TypedType, A19: TypedType, A20: TypedType, A21: TypedType, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, B21, T <: BaseView21[Entity, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21]](
-    table: TableQuery[T],
-    c1Mapping: FieldType[A1, B1],
-    c2Mapping: FieldType[A2, B2],
-    c3Mapping: FieldType[A3, B3],
-    c4Mapping: FieldType[A4, B4],
-    c5Mapping: FieldType[A5, B5],
-    c6Mapping: FieldType[A6, B6],
-    c7Mapping: FieldType[A7, B7],
-    c8Mapping: FieldType[A8, B8],
-    c9Mapping: FieldType[A9, B9],
-    c10Mapping: FieldType[A10, B10],
-    c11Mapping: FieldType[A11, B11],
-    c12Mapping: FieldType[A12, B12],
-    c13Mapping: FieldType[A13, B13],
-    c14Mapping: FieldType[A14, B14],
-    c15Mapping: FieldType[A15, B15],
-    c16Mapping: FieldType[A16, B16],
-    c17Mapping: FieldType[A17, B17],
-    c18Mapping: FieldType[A18, B18],
-    c19Mapping: FieldType[A19, B19],
-    c20Mapping: FieldType[A20, B20],
-    c21Mapping: FieldType[A21, B21]
-  ): TableFilterAPI[Entity, Formatter, T] = {
-
-    new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
-      override val formatter: Formatter = createFormatter(this)
-
-      override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(21)(None)
-
-      override def filterFields: Seq[FieldType[_, _]] =
-        Seq[FieldType[_, _]](c1Mapping, c2Mapping, c3Mapping, c4Mapping, c5Mapping, c6Mapping, c7Mapping, c8Mapping, c9Mapping, c10Mapping, c11Mapping, c12Mapping, c13Mapping, c14Mapping, c15Mapping, c16Mapping, c17Mapping, c18Mapping, c19Mapping, c20Mapping, c21Mapping)
-
-      override protected def tableColumns(table: T): Seq[LongUnicornPlay.driver.simple.Column[_]] = Seq(
-        table.c1, table.c2, table.c3, table.c4, table.c5, table.c6, table.c7, table.c8, table.c9, table.c10, table.c11, table.c12, table.c13, table.c14, table.c15, table.c16, table.c17, table.c18, table.c19, table.c20, table.c21
-      )
-    }
-  }
-
-  def create[A1: TypedType, A2: TypedType, A3: TypedType, A4: TypedType, A5: TypedType, A6: TypedType, A7: TypedType, A8: TypedType, A9: TypedType, A10: TypedType, A11: TypedType, A12: TypedType, A13: TypedType, A14: TypedType, A15: TypedType, A16: TypedType, A17: TypedType, A18: TypedType, A19: TypedType, A20: TypedType, A21: TypedType, A22: TypedType, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, B21, B22, T <: BaseView22[Entity, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21, A22]](
-    table: TableQuery[T],
-    c1Mapping: FieldType[A1, B1],
-    c2Mapping: FieldType[A2, B2],
-    c3Mapping: FieldType[A3, B3],
-    c4Mapping: FieldType[A4, B4],
-    c5Mapping: FieldType[A5, B5],
-    c6Mapping: FieldType[A6, B6],
-    c7Mapping: FieldType[A7, B7],
-    c8Mapping: FieldType[A8, B8],
-    c9Mapping: FieldType[A9, B9],
-    c10Mapping: FieldType[A10, B10],
-    c11Mapping: FieldType[A11, B11],
-    c12Mapping: FieldType[A12, B12],
-    c13Mapping: FieldType[A13, B13],
-    c14Mapping: FieldType[A14, B14],
-    c15Mapping: FieldType[A15, B15],
-    c16Mapping: FieldType[A16, B16],
-    c17Mapping: FieldType[A17, B17],
-    c18Mapping: FieldType[A18, B18],
-    c19Mapping: FieldType[A19, B19],
-    c20Mapping: FieldType[A20, B20],
-    c21Mapping: FieldType[A21, B21],
-    c22Mapping: FieldType[A22, B22]
-  ): TableFilterAPI[Entity, Formatter, T] = {
-
-    new BaseFilter[A1, Entity, T, FieldType[_, _], Formatter](table) {
-      override val formatter: Formatter = createFormatter(this)
-
-      override protected def emptyFilterDataInner: Seq[Option[Any]] = Seq.fill(22)(None)
-
-      override def filterFields: Seq[FieldType[_, _]] =
-        Seq[FieldType[_, _]](c1Mapping, c2Mapping, c3Mapping, c4Mapping, c5Mapping, c6Mapping, c7Mapping, c8Mapping, c9Mapping, c10Mapping, c11Mapping, c12Mapping, c13Mapping, c14Mapping, c15Mapping, c16Mapping, c17Mapping, c18Mapping, c19Mapping, c20Mapping, c21Mapping, c22Mapping)
-
-      override protected def tableColumns(table: T): Seq[LongUnicornPlay.driver.simple.Column[_]] = Seq(
-        table.c1, table.c2, table.c3, table.c4, table.c5, table.c6, table.c7, table.c8, table.c9, table.c10, table.c11, table.c12, table.c13, table.c14, table.c15, table.c16, table.c17, table.c18, table.c19, table.c20, table.c21, table.c22
       )
     }
   }
