@@ -5,7 +5,9 @@ import play.api.data.validation.ValidationError
 import play.api.libs.json.{ JsObject, _ }
 
 class JsonFormatter[Entity <: Product](filterFields: Seq[JsonFilterField[_, _]], columnsNames: Seq[String], label: String => String) {
-/*
+
+
+  /*
 
   private def jsonFieldDefinition(name: String, field: JsonFilterField[_, _]): JsObject = JsObject(Seq(
     "key" -> JsString(name),

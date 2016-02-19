@@ -9,7 +9,13 @@ object Order {
 
 
 case class FilterConstrains(fieldConstrains: Map[String, Any] = Map.empty,
-                            nestedConstrains: Map[String, FilterConstrains] = Map.empty)
+                            nestedConstrains: Map[String, FilterConstrains] = Map.empty){
+  def addFieldConstrain(name: String)( v: Any): FilterConstrains =
+    copy(fieldConstrains = fieldConstrains + (name -> v))
+
+  def addNested(name: String)(nested: FilterConstrains) =
+    copy(nestedConstrains = nestedConstrains + (name -> nested))
+}
 
 /**
   * Base class that is mapped to form.
