@@ -4,7 +4,7 @@ import org.virtuslab.beholder._
 import org.virtuslab.beholder.filters.{ FilterConstrains, FilterAPI, FilterDefinition, LightFilter }
 import org.virtuslab.beholder.model._
 import org.virtuslab.beholder.views.BaseView
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 trait JoinSuite extends FiltersTestSuite {
   self: AppTest =>

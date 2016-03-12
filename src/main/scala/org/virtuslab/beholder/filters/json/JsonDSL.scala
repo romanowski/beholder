@@ -2,11 +2,10 @@ package org.virtuslab.beholder.filters.json
 
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.views.BaseView
-import org.virtuslab.unicorn.LongUnicornPlay
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 import play.api.libs.json.Format
 
-import scala.slick.ast.{ BaseTypedType, TypedType }
+import slick.ast.BaseTypedType
 
 class JsonTypedType[A](implicit val typed: BaseTypedType[A], implicit val format: Format[A])
 

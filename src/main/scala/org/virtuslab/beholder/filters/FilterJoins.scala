@@ -1,6 +1,6 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 trait FilterJoins[E, T <: Table[E]] {
   self: LightFilter[E, T] =>
@@ -12,7 +12,7 @@ trait FilterJoins[E, T <: Table[E]] {
   protected def joins: Map[String, FilterJoin] = _joins
 
   //TODO - dsl
-  def join[TE, TT <: Table[TE]](name: String, from: LightFilter[TE, TT])(on: (T, TT) => Column[Boolean]): LightFilter[E, T] = {
+  def join[TE, TT <: Table[TE]](name: String, from: LightFilter[TE, TT])(on: (T, TT) => Rep[Boolean]): LightFilter[E, T] = {
     val join: FilterJoin = data => query =>
       for {
         ft <- query

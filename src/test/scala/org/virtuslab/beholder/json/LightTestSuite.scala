@@ -5,7 +5,7 @@ import java.sql.Date
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.model._
 import org.virtuslab.beholder.suites._
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 import org.virtuslab.beholder.filters.json.JsonDSL
 import org.virtuslab.beholder._
 

@@ -2,7 +2,7 @@ package org.virtuslab.beholder.filters
 package json
 
 import play.api.libs.json._
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 trait JsonFilterImpl[E, T <: Table[E]] extends LightFilter[E, T] with JsonAwareFilter[E] {
   override def name: String = table.shaped.value.tableName // Can be override
@@ -11,7 +11,7 @@ trait JsonFilterImpl[E, T <: Table[E]] extends LightFilter[E, T] with JsonAwareF
 
   override protected def nested: Map[String, BaseJsonFilter] = _nested
 
-  override def join[TE, TT <: Table[TE]](name: String, from: LightFilter[TE, TT])(on: (T, TT) => Column[Boolean]): LightFilter[E, T] = {
+  override def join[TE, TT <: Table[TE]](name: String, from: LightFilter[TE, TT])(on: (T, TT) => Rep[Boolean]): LightFilter[E, T] = {
     from match {
       case jsonFilter: BaseJsonFilter =>
         _nested = _nested + (name -> jsonFilter)

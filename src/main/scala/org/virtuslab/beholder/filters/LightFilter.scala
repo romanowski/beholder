@@ -1,27 +1,30 @@
 package org.virtuslab.beholder.filters
 
 import org.virtuslab.beholder.views.BaseView
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-import scala.collection.immutable.Iterable
-import scala.slick.ast.TypedCollectionTypeConstructor
-import scala.slick.lifted.Ordered
+import collection.immutable.Iterable
+import slick.lifted.ColumnOrdered
+import slick.lifted.Ordered
+import slick.ast.Ordering
+
 import scala.util.Try
 
 trait MappedColumnsFilter[E, T <: Table[E]] extends LightFilter[E, T] {
 
-  protected val columns: Map[String, T => Column[_]]
-  protected val order: T => Column[_]
+  protected val columns: Map[String, T => Rep[_]]
+  protected val order: T => Rep[_]
 
-  override protected def defaultOrder(q: T): Column[_] = order(q)
+  override protected def defaultOrder(q: T): Rep[_] = order(q)
 
-  override protected def columnFor(q: T, name: String): Option[Column[_]] = columns.get(name).map(_.apply(q))
+  override protected def columnFor(q: T, name: String): Option[Rep[_]] = columns.get(name).map(_.apply(q))
 }
 
 trait ViewBasedFilter[E, T <: BaseView[E]] extends LightFilter[E, T] {
-  override protected def columnFor(q: T, name: String): Option[Column[_]] = Try(q.columnByName(name)).toOption
+  override protected def columnFor(q: T, name: String): Option[Rep[_]] = Try(q.columnByName(name)).toOption
 
-  override protected def defaultOrder(q: T): Column[_] = q.id
+  override protected def defaultOrder(q: T): Rep[_] = q.id
 }
 trait MappedFieldsFilter {
   protected val fields: Map[String, FilterField]
@@ -50,15 +53,15 @@ trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] 
 
   protected def table: FilterQuery
 
-  protected def defaultOrder(q: T): Column[_]
+  protected def defaultOrder(q: T): Rep[_]
 
-  protected def columnFor(q: T, name: String): Option[Column[_]]
+  protected def columnFor(q: T, name: String): Option[Rep[_]]
 
   //################ Extendable methods ##################
 
-  protected def initialConstrains: Column[Option[Boolean]] = LiteralColumn(Some(true))
+  protected def initialConstrains: Rep[Option[Boolean]] = LiteralColumn(Some(true))
 
-  protected def noSuchColumn(name: String): Column[_] =
+  protected def noSuchColumn(name: String): Rep[_] =
     throw new IllegalArgumentException(s"Filter does not contain clumn $name")
 
   protected def noSuchField(name: String): FilterField =
@@ -78,7 +81,7 @@ trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] 
 
   private def getColumn(q: T, name: String) = columnFor(q, name).getOrElse(noSuchColumn(name))
 
-  protected def columnsFilters(table: T, data: Map[String, Any]): Iterable[Column[Option[Boolean]]] =
+  protected def columnsFilters(table: T, data: Map[String, Any]): Iterable[Rep[Option[Boolean]]] =
     data.map {
       case (name, value) =>
         getField(name).doFilter(getColumn(table, name))(value)
@@ -87,7 +90,7 @@ trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] 
   /**
    * applies filter data into query where clauses
    */
-  protected def filters(data: Map[String, Any])(table: T): Column[Option[Boolean]] =
+  protected def filters(data: Map[String, Any])(table: T): Rep[Option[Boolean]] =
     columnsFilters(table, data).foldLeft(initialConstrains)(_ && _)
 
   def performJoins(t: FilterQuery, filterDefinition: FilterConstrains): FilterQuery =
@@ -98,13 +101,16 @@ trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] 
     }
 
   private def ordering(data: FilterDefinition)(table: T): Ordered = {
+    def ordered(c: Rep[_]) = ColumnOrdered(c, Ordering())
+
     val fromFilter = data.orderBy.flatMap {
       case Order(name, asc) =>
-        val column = getColumn(table, name)
+        val column = ordered(getColumn(table, name))
+
         (if (asc) column.asc else column.desc).columns
     }
 
-    new Ordered(fromFilter ++ defaultOrder(table).asc.columns)
+    new Ordered(fromFilter ++ ordered(defaultOrder(table)).asc.columns)
   }
 
   private def createFilter(data: FilterDefinition): FilterQuery =
@@ -114,6 +120,6 @@ trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] 
     val afterTake = data.take.fold(filter)(filter.take)
     val afterSkip = data.skip.fold(afterTake)(afterTake.drop)
 
-    afterSkip.to(TypedCollectionTypeConstructor.forArray).list
+    afterSkip.list
   }
 }

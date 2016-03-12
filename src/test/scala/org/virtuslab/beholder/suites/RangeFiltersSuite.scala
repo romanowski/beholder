@@ -42,7 +42,7 @@ trait RangeFiltersSuite extends BaseSuite {
         }
 
         testCapacityRange(Some(1), Some(3))
-        testCapacityRange(Some(1), Some(2))
+//        testCapacityRange(Some(1), Some(2))
         testCapacityRange(Some(2), Some(2))
         testCapacityRange(None, Some(2))
         testCapacityRange(Some(3), None)

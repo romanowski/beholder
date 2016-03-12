@@ -5,7 +5,8 @@ import java.sql.Date
 import org.virtuslab.beholder.model.{ UserId, Machines, Users }
 import org.virtuslab.beholder.views.FilterableViews
 import org.virtuslab.unicorn.LongUnicornPlay._
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
+import slick.ast.{TypedType, BaseTypedType}
 
 case class UserMachineViewRow(
   email: String,
@@ -19,6 +20,7 @@ case class UserMachineViewRow(
 trait UserMachinesView extends ModelIncluded {
   self: AppTest =>
 
+
   def createUsersMachineView(implicit session: Session) = {
     //query that is a base for view
     new CustomTypeMappers {
@@ -27,6 +29,8 @@ trait UserMachinesView extends ModelIncluded {
         userMachine <- userMachineQuery if user.id === userMachine.userId
         machine <- TableQuery[Machines] if machine.id === userMachine.machineId
       } yield (user, machine)
+
+      usersMachinesQuery.sortBy(_._2.cores.asc)
 
       val tableQuery = FilterableViews.createView(
         name = "USERS_MACHINE_VIEW",
@@ -44,7 +48,7 @@ trait UserMachinesView extends ModelIncluded {
             "userId" -> user.id)
       }
 
-      tableQuery.viewDDL.create
+      TestInvoker.invokeAction(tableQuery.viewDDL.create)
     }.tableQuery
   }
 }

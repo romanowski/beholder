@@ -33,7 +33,7 @@ case class JsonConstrainsFormatter(filter: BaseJsonFilter) extends Format[Filter
   ))
 
   //TODO unified both
-  private def readFields(jsValue: JsValue): JsResult[FilterConstrains] = {
+  private def readFields(jsValue: JsLookupResult): JsResult[FilterConstrains] = {
 
     val foldStart: JsResult[FilterConstrains] = JsSuccess(FilterConstrains())
 
@@ -51,19 +51,19 @@ case class JsonConstrainsFormatter(filter: BaseJsonFilter) extends Format[Filter
     }
 
     jsValue match {
-      case JsObject(values) =>
+      case JsDefined(JsObject(values)) =>
         values.foldLeft(foldStart) {
           case (current, (name, json)) =>
             appendNestedField(current, name, json)
         }
       case _ =>
-        JsError(s"Nested filter definition in ${filter.name} must be js object!s")
+        JsError(s"Nested filter definition in ${filter.name} must exist and be js object!")
     }
 
   }
 
   //todo too ugly!!
-  private def readNested(jsValue: JsValue)(result: JsResult[FilterConstrains]): JsResult[FilterConstrains] = {
+  private def readNested(jsValue: JsLookupResult)(result: JsResult[FilterConstrains]): JsResult[FilterConstrains] = {
     def appendNested(to: JsResult[FilterConstrains], name: String, json: JsValue): JsResult[FilterConstrains] =
       filter.nestedFilterFor(name) match {
         case Some(filter) =>
@@ -75,12 +75,12 @@ case class JsonConstrainsFormatter(filter: BaseJsonFilter) extends Format[Filter
       }
 
     jsValue match {
-      case JsObject(values) =>
+      case JsDefined(JsObject(values)) =>
         values.foldLeft(result) {
           case (current, (name, json)) =>
             appendNested(current, name, json)
         }
-      case _ =>
+      case _ => //TODO maybe better results
         JsError(s"Nested filter definition in ${filter.name} must be js object!s")
     }
   }
@@ -90,8 +90,8 @@ case class JsonConstrainsFormatter(filter: BaseJsonFilter) extends Format[Filter
   private def writeFieldConstrains(constrains: Map[String, Any]) =
     JsObject(
       constrains.map {
-      case (name, value) => name -> filter.jsonField(name).getOrElse(noSuchField(name)).writeFilter(value)
-    }.toSeq
+        case (name, value) => name -> filter.jsonField(name).getOrElse(noSuchField(name)).writeFilter(value)
+      }.toSeq
     )
 
   private def writeNestedConstrains(constrains: Map[String, FilterConstrains]): JsValue =

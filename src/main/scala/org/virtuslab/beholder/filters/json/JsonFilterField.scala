@@ -1,13 +1,11 @@
-package org.virtuslab.beholder.filters.json
+package org.virtuslab.beholder.filters
+package json
 
-import org.virtuslab.beholder.filters.{ FilterRange, RangeField, IdentityField, MappedFilterField }
-import org.virtuslab.unicorn.LongUnicornPlay
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
 import play.api.libs.functional.syntax._
 
-import scala.reflect.ClassTag
-import scala.slick.ast.{ BaseTypedType, TypedType }
+import slick.ast.BaseTypedType
 import play.api.libs.json._
+import play.api.libs.json.Format
 
 trait JsonFilterField {
   def fieldTypeDefinition: JsValue
@@ -41,8 +39,8 @@ class IdentityRangeJsonField[A: BaseTypedType: Format]
     extends RangeField[A] with MappedJsonFilterField[A, FilterRange[A]] {
 
   private implicit def rangeFormat[T: Format]: Format[FilterRange[T]] =
-    ((__ \ "from").format[Option[T]] and
-      (__ \ "to").format[Option[T]])(FilterRange.apply, unlift(FilterRange.unapply))
+    ((__ \ "from").formatNullable[T] and
+      (__ \ "to").formatNullable[T])(FilterRange.apply, unlift(FilterRange.unapply))
 
   override protected def filterFormat: Format[FilterRange[A]] = implicitly[Format[FilterRange[A]]]
 

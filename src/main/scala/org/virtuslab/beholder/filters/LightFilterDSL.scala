@@ -2,9 +2,9 @@ package org.virtuslab.beholder.filters
 
 import org.virtuslab.beholder.utils.ILikeExtension._
 import org.virtuslab.beholder.views.BaseView
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-import scala.slick.ast.BaseTypedType
+import slick.ast.BaseTypedType
 
 object LightDSLFilter extends DSLBase[FilterField, LightFilter, BaseTypedType] {
   override def create[E, T <: BaseView[E]](viewFilterState: LightDSLFilter.ViewFilterState[E, T]): LightFilter[E, T] =
@@ -16,7 +16,7 @@ object LightDSLFilter extends DSLBase[FilterField, LightFilter, BaseTypedType] {
   override def in[T: BaseTypedType]: FilterField with MappedFilterField[T, T] = new IdentityField[T]
 
   override val inText = new MappedFilterField[String, String] {
-    override def filterOnColumn(column: Column[String])(data: String): Column[Option[Boolean]] = column ilike s"%${escape(data)}%"
+    override def filterOnColumn(column: Rep[String])(data: String): Rep[Option[Boolean]] = column.? ilike s"%${escape(data)}%"
   }
 
   override def inRange[T: BaseTypedType]: FilterField with MappedFilterField[T, FilterRange[T]] = new RangeField[T]

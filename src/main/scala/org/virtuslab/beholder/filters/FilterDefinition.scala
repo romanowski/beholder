@@ -7,8 +7,7 @@ object Order {
 
 case class FilterConstrains(
     fieldConstrains: Map[String, Any] = Map.empty,
-    nestedConstrains: Map[String, FilterConstrains] = Map.empty
-) {
+    nestedConstrains: Map[String, FilterConstrains] = Map.empty) {
   def addFieldConstrain(name: String)(v: Any): FilterConstrains =
     copy(fieldConstrains = fieldConstrains + (name -> v))
 
@@ -28,8 +27,7 @@ case class FilterDefinition(
   take: Option[Int],
   skip: Option[Int],
   orderBy: Seq[Order],
-  constrains: FilterConstrains
-)
+  constrains: FilterConstrains)
 
 object FilterDefinition {
   def empty = FilterDefinition(None, None, Nil, FilterConstrains(Map(), Map()))
