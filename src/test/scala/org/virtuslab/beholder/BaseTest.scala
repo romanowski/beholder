@@ -24,10 +24,9 @@ trait ModelIncluded {
 
   lazy val TeamsRepository = new TeamsRepository {}
 
-  lazy val machineParameterRepository = new MachineParameterRepository{}
+  lazy val machineParameterRepository = new MachineParameterRepository {}
 
   lazy val userMachineQuery = TableQuery[UserMachines]
-
 
   final def rollbackWithModel[A](func: Session => A): A = rollback {
     implicit session: Session =>

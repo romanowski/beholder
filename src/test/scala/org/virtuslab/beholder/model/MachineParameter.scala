@@ -39,6 +39,5 @@ class MachineParameters(tag: Tag) extends IdTable[MachineParameterId, MachinePar
 
   def machine = column[MachineId]("machine", O.NotNull)
 
-
   override def * = (id.?, name, value, machine) <> (MachineParameter.tupled, MachineParameter.unapply)
 }

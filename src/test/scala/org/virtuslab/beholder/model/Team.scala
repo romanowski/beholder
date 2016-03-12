@@ -23,7 +23,8 @@ case class Team(
   id: Option[TeamId],
   admin: UserId,
   teamName: String,
-  system: String) extends WithId[TeamId]
+  system: String
+) extends WithId[TeamId]
 
 /** Table definition for Teams. */
 class Teams(tag: Tag) extends IdTable[TeamId, Team](tag, "TeamS") {
@@ -32,7 +33,6 @@ class Teams(tag: Tag) extends IdTable[TeamId, Team](tag, "TeamS") {
 
   def teamName = column[String]("teamName", O.NotNull)
   def system = column[String]("system", O.NotNull)
-
 
   override def * = (id.?, admin, teamName, system) <> (Team.tupled, Team.unapply)
 }

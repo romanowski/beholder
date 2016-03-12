@@ -2,7 +2,7 @@ package org.virtuslab.beholder
 
 import java.sql.Date
 
-import org.virtuslab.beholder.model.{UserId, Machines, Users}
+import org.virtuslab.beholder.model.{ UserId, Machines, Users }
 import org.virtuslab.beholder.views.FilterableViews
 import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._

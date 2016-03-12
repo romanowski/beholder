@@ -1,17 +1,19 @@
 package org.virtuslab.beholder.filters.json
 
-import org.virtuslab.beholder.filters.{FilterDefinition, FilterResult}
+import org.virtuslab.beholder.filters.{ FilterDefinition, FilterResult }
 import play.api.libs.json._
 
 object ResultWritter {
   import JsonKeys.Results._
 
-  def formatResults[E](filter: JsonAwareFilter[E])(results: FilterResult[E], definition: FilterDefinition): JsValue =
+  def formatResults[E: Writes](filter: JsonAwareFilter[E])(results: FilterResult[E], definition: FilterDefinition): JsValue = {
+    val writes = implicitly[Writes[E]].writes _
     JsObject(Seq(
       filterKey -> JsonDefinitionFormatter.formatFor(filter).writes(definition),
       resultKey -> JsObject(Seq(
-        dataKey -> JsArray(results.content.map(filter.writeEntry)),
+        dataKey -> JsArray(results.content.map(writes)),
         totalKey -> JsNumber(results.total)
       ))
     ))
+  }
 }

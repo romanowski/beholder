@@ -98,7 +98,8 @@ trait FiltersTestSuite extends BaseSuite {
       import data._
 
       val filterData = filter.filterWithTotalEntitiesNumber(
-        baseFilter.copy(orderBy = Seq(Order("cores", asc = false)), skip = Some(1)))
+        baseFilter.copy(orderBy = Seq(Order("cores", asc = false)), skip = Some(1))
+      )
       val fromDbOrderedByCoresDesc = allFromDb.sortBy(view => (-view.cores, view.email))
 
       filterData.content should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc.drop(1)

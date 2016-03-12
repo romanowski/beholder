@@ -3,7 +3,6 @@ package org.virtuslab.beholder.filters
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.simple._
 
-
 /**
  * Base filter class, contains public operations for all filters instances.
  *
