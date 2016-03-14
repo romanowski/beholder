@@ -25,9 +25,6 @@ abstract class BaseFilter[Id, Entity, FilterTable <: BaseView[Entity], FieldType
 
   override def defaultOrder(q: FilterTable): Rep[_] = q.id
 
-  /**
-   * Empty data for filter representing empty filter (all fields in tuple (type M) are filled with Empty)
-   */
   protected def emptyFilterDataInner: Seq[Option[Any]]
 
   def filterFields: Seq[FieldType]

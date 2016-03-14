@@ -11,7 +11,8 @@ trait FilterJoins[E, T <: Table[E]] {
 
   protected def joins: Map[String, FilterJoin] = _joins
 
-  //TODO - dsl
+
+  //TODO - dsl for joins
   def join[TE, TT <: Table[TE]](name: String, from: LightFilter[TE, TT])(on: (T, TT) => Rep[Boolean]): LightFilter[E, T] = {
     val join: FilterJoin = data => query =>
       for {

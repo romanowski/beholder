@@ -1,6 +1,7 @@
 package org.virtuslab.beholder
 
 import org.virtuslab.beholder.model._
+import org.virtuslab.beholder.view.UserMachinesView
 import slick.lifted.TableQuery
 
 class DatabaseTests extends AppTest with UserMachinesView  {

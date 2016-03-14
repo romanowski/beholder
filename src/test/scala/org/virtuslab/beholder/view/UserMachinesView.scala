@@ -1,12 +1,12 @@
-package org.virtuslab.beholder
+package org.virtuslab.beholder.view
 
 import java.sql.Date
 
-import org.virtuslab.beholder.model.{ UserId, Machines, Users }
+import org.virtuslab.beholder.model.{Machines, UserId, Users}
 import org.virtuslab.beholder.views.FilterableViews
+import org.virtuslab.beholder.{AppTest, ModelIncluded, TestInvoker}
 import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
-import slick.ast.{TypedType, BaseTypedType}
 
 case class UserMachineViewRow(
   email: String,

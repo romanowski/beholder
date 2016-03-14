@@ -11,27 +11,6 @@ import slick.ast.Ordering
 
 import scala.util.Try
 
-trait MappedColumnsFilter[E, T <: Table[E]] extends LightFilter[E, T] {
-
-  protected val columns: Map[String, T => Rep[_]]
-  protected val order: T => Rep[_]
-
-  override protected def defaultOrder(q: T): Rep[_] = order(q)
-
-  override protected def columnFor(q: T, name: String): Option[Rep[_]] = columns.get(name).map(_.apply(q))
-}
-
-trait ViewBasedFilter[E, T <: BaseView[E]] extends LightFilter[E, T] {
-  override protected def columnFor(q: T, name: String): Option[Rep[_]] = Try(q.columnByName(name)).toOption
-
-  override protected def defaultOrder(q: T): Rep[_] = q.id
-}
-trait MappedFieldsFilter {
-  protected val fields: Map[String, FilterField]
-
-  protected def fieldFor(name: String): Option[FilterField] = fields.get(name)
-}
-
 trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] {
 
   //################ Public API #####################
@@ -57,12 +36,12 @@ trait LightFilter[E, T <: Table[E]] extends FilterAPI[E] with FilterJoins[E, T] 
 
   protected def columnFor(q: T, name: String): Option[Rep[_]]
 
-  //################ Extendable methods ##################
+  //################ Extension methods ##################
 
-  protected def initialConstrains: Rep[Option[Boolean]] = LiteralColumn(Some(true))
+  protected def initialConstrains: Rep[Option[Boolean]] = LiteralColumn(Some(true)) //TODO include in dsl
 
   protected def noSuchColumn(name: String): Rep[_] =
-    throw new IllegalArgumentException(s"Filter does not contain clumn $name")
+    throw new IllegalArgumentException(s"Filter does not contain clumn $name") // TODO use specific exception
 
   protected def noSuchField(name: String): FilterField =
     throw new IllegalArgumentException(s"Filter does not contain field $name")

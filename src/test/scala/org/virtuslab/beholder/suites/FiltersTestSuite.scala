@@ -9,6 +9,9 @@ import org.virtuslab.beholder.filters._
 trait FiltersTestSuite extends BaseSuite {
   self: AppTest =>
 
+
+  // TODO add enums
+  // TODO add negative tests
   /*
     UserMachineViewRow(a@a.pl,Ubuntu,4,2014-12-05,Some(1.00))
     UserMachineViewRow(o@a.pl,Ubuntu,4,2014-12-05,Some(1.00))
@@ -28,7 +31,7 @@ trait FiltersTestSuite extends BaseSuite {
       import data._
 
       val fromDbOrderedByCores = allFromDb.sortBy(view => (view.cores, view.email))
-      val orderByCore = doFilters(data, baseFilter.copy(orderBy = Seq(Order("cores", asc = true))))
+      val orderByCore = doFilters(data, baseFilter.withOrder("cores"))
 
       orderByCore should contain theSameElementsInOrderAs fromDbOrderedByCores
   }
@@ -36,7 +39,7 @@ trait FiltersTestSuite extends BaseSuite {
   it should "order by argument desc correctly" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = doFilters(data, baseFilter.copy(orderBy = Seq(Order("cores", asc = false))))
+      val orderByCoreDesc = doFilters(data, baseFilter.withOrder("cores", asc = false))
       val fromDbOrderedByCoresDesc = allFromDb.sortBy(view => (-view.cores, view.email))
 
       orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc
@@ -45,7 +48,7 @@ trait FiltersTestSuite extends BaseSuite {
   it should "take correctly" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = doFilters(data, baseFilter.copy(orderBy = Seq(Order("cores", asc = false)), take = Some(2)))
+      val orderByCoreDesc = doFilters(data, baseFilter.withOrder("cores", asc = false).copy(take = Some(2)))
       val fromDbOrderedByCoresDesc = allFromDb.sortBy(view => (-view.cores, view.email))
 
       orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc.take(2)
@@ -54,7 +57,7 @@ trait FiltersTestSuite extends BaseSuite {
   it should "skip correctly" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = doFilters(data, baseFilter.copy(orderBy = Seq(Order("cores", asc = false)), skip = Some(1)))
+      val orderByCoreDesc = doFilters(data, baseFilter.withOrder("cores", asc = false).copy(skip = Some(1)))
       val fromDbOrderedByCoresDesc = allFromDb.sortBy(view => (-view.cores, view.email))
 
       orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc.drop(1)
@@ -98,7 +101,7 @@ trait FiltersTestSuite extends BaseSuite {
       import data._
 
       val filterData = filter.filterWithTotalEntitiesNumber(
-        baseFilter.copy(orderBy = Seq(Order("cores", asc = false)), skip = Some(1))
+        baseFilter.withOrder("cores", asc = false).copy(skip = Some(1))
       )
       val fromDbOrderedByCoresDesc = allFromDb.sortBy(view => (-view.cores, view.email))
 

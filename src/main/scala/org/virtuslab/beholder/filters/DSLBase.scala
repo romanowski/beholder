@@ -102,4 +102,6 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, T <: Table[E]] <: 
   def inText: DSLField with MappedFilterField[String, String]
 
   def inRange[T: FieldMapper]: DSLField with MappedFilterField[T, FilterRange[T]]
+
+  def inEnum[T <: Enumeration]: DSLField with MappedFilterField[T#Value, T#Value] = ??? // TODO implement this!
 }

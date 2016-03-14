@@ -3,11 +3,14 @@ package org.virtuslab.beholder.suites
 import org.virtuslab.beholder._
 import org.virtuslab.beholder.filters.{ FilterConstrains, FilterAPI, FilterDefinition, LightFilter }
 import org.virtuslab.beholder.model._
+import org.virtuslab.beholder.view.UserMachineViewRow
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 trait JoinSuite extends FiltersTestSuite {
   self: AppTest =>
+
+  //TODO add 3 nested deep TODO negative tests
 
   def createTeamFilter(data: BaseFilterData): LightFilter[Team, Teams]
 
@@ -16,7 +19,10 @@ trait JoinSuite extends FiltersTestSuite {
   private val adminJoinName = "admin"
 
   final override def createFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
-    createUserMachineFilter(data).join(adminJoinName, createTeamFilter(data))(
+    val userMachineFilter = createUserMachineFilter(data)
+    val teamFilter = createTeamFilter(data)
+
+    userMachineFilter.join(adminJoinName, teamFilter)(
       (um, t) => t.admin === um.typedColumnByName[UserId]("userId")
     )
   }

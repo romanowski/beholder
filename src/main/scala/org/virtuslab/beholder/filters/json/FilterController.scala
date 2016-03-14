@@ -3,9 +3,11 @@ package org.virtuslab.beholder.filters.json
 import org.virtuslab.beholder.filters.FilterDefinition
 import play.api.mvc._
 import play.api.libs.json._
-import org.virtuslab.unicorn.LongUnicornPlay.driver.simple.Session
+import org.virtuslab.unicorn.LongUnicornPlay.driver.api.Session
 
 abstract class FilterController[Entity: Writes](filter: JsonAwareFilter[Entity]) extends Controller {
+
+  //TODO - move json to different project and best controller also
 
   protected def inSession(body: Request[AnyContent] => Session => JsResult[JsValue]): EssentialAction
 
@@ -17,7 +19,7 @@ abstract class FilterController[Entity: Writes](filter: JsonAwareFilter[Entity])
   //for filter modification such us setting default parameters etc.
   protected def mapFilterData(data: FilterDefinition) = data
 
-  final def doFilter: EssentialAction =
+  final def doFilter(): EssentialAction =
     inSession {
       request =>
         implicit session =>
@@ -27,7 +29,7 @@ abstract class FilterController[Entity: Writes](filter: JsonAwareFilter[Entity])
             data = filter.filterWithTotalEntitiesNumber(mapFilterData(filterDefinition))
           } yield ResultWritter.formatResults(filter)(data, filterDefinition)
     }
-}
+} //TODO Contexted filters
 /*
 
 abstract class ContextFilterController[Context, Entity <: Product](contextedFilter: ContextedFilterAPI[Context, Entity, JsonFormatter[Entity]])

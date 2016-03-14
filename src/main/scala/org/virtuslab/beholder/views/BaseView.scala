@@ -3,20 +3,11 @@ package org.virtuslab.beholder.views
 import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.DDL
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
-import slick.ast.TypedType
-
-import scala.concurrent.Await
-import scala.concurrent.duration._
 
 import scala.language.existentials
 import slick.lifted.{ TableQuery, Tag }
 
-/**
- *
- * @param viewName name of view
- * @tparam Id entity id type
- * @tparam Entity entity type
- */
+
 abstract class BaseView[Entity](tag: Tag, val viewName: String) extends BaseTable[Entity](tag, viewName) {
 
   /**

@@ -1,8 +1,8 @@
 package org.virtuslab.beholder.suites
 
-import org.virtuslab.beholder.filters.{ FilterConstrains, LightFilter, FilterAPI, FilterDefinition }
-import org.virtuslab.beholder.views.BaseView
-import org.virtuslab.beholder.{ AppTest, UserMachineViewRow, UserMachinesView }
+import org.virtuslab.beholder.filters.{ FilterConstrains, FilterAPI, FilterDefinition }
+import org.virtuslab.beholder.view.{UserMachineViewRow, UserMachinesView}
+import org.virtuslab.beholder.AppTest
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 trait BaseSuite extends UserMachinesView {

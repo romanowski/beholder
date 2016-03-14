@@ -1,6 +1,6 @@
 package org.virtuslab.beholder.filters.json
 
-//TODO move all keys here
+//TODO move all keys here TODO use in tests
 object JsonKeys {
   object Constrains {
     val fieldConstrainsKey = "fieldConstrains"
