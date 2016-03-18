@@ -1,11 +1,11 @@
 package org.virtuslab.beholder.filters.json
 
-import org.joda.time.{LocalDate, DateTime}
+import java.sql.Date
+
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
-import play.api.libs.json.{JsString, JsValue, Format}
-
+import play.api.libs.json.{Format, JsString, JsValue}
 import slick.ast.BaseTypedType
 
 import scala.reflect.ClassTag
@@ -47,14 +47,13 @@ object JsonDSL
     new IdentityRangeJsonField[T]
   }
 
-  override def inText: FilterField with JsonFilterField with MappedFilterField[String, String] = in[String]
+  override def inText: FilterField with JsonFilterField with MappedFilterField[String, String] = in[String](stringJsonTypedField)
 }
 
 trait JsonTypedTypeImplicits{
-  implicit val intField = JsonTypedType[Int]
-  implicit val stringField = JsonTypedType[String]
-  implicit val bigDecimalField = JsonTypedType[BigDecimal]
-  implicit val booleanField = JsonTypedType[Boolean]
-  implicit val dateTime = JsonTypedType[DateTime]
-  implicit val localDate = JsonTypedType[LocalDate]
+  implicit val intJsonTypedField = JsonTypedType[Int]
+  implicit val stringJsonTypedField = JsonTypedType[String]
+  implicit val bigDecimalJsonTypedField = JsonTypedType[BigDecimal]
+  implicit val booleanJsonTypedField = JsonTypedType[Boolean]
+  implicit val dateJsonTypedField = JsonTypedType[Date]
 }
