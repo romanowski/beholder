@@ -3,6 +3,8 @@ package org.virtuslab.beholder.filters
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 import slick.ast.BaseTypedType
 
+import scala.reflect.ClassTag
+
 /**
  * filter field - there is information how read parameters from form data (mapping)
  * and how create sql's where statement(filter on column) for it
@@ -15,32 +17,40 @@ trait FilterField {
   def doFilter(column: Rep[_])(value: Any): Rep[Option[Boolean]]
 }
 
-abstract class MappedFilterField[A: BaseTypedType, B] extends FilterField {
+class MappedFilterField[A: BaseTypedType: ClassTag] extends FilterField {
   override final def doFilter(column: Rep[_])(value: Any): Rep[Option[Boolean]] =
-    filterOnColumn(column.asInstanceOf[Rep[A]])(value.asInstanceOf[B])
+    filterShapes(column.asInstanceOf[Rep[A]]).apply(value)
 
-  protected def filterOnColumn(column: Rep[A])(value: B): Rep[Option[Boolean]]
-}
+  protected def filterOnValue(column: Rep[A], value: A): Rep[Option[Boolean]] =
+    (column === value).?
 
-class EnumField[T <: Enumeration](implicit tm: BaseTypedType[T#Value]) extends MappedFilterField[T#Value, T#Value] {
-  override protected def filterOnColumn(column: Rep[T#Value])(value: T#Value): Rep[Option[Boolean]] = column.? === value
-}
-
-class IdentityField[T: BaseTypedType] extends MappedFilterField[T, T] {
-  override protected def filterOnColumn(column: Rep[T])(value: T): Rep[Option[Boolean]] = column.? === value
-}
-
-class RangeField[T: BaseTypedType] extends MappedFilterField[T, FilterRange[T]] {
-  override def filterOnColumn(column: Rep[T])(value: FilterRange[T]): Rep[Option[Boolean]] = {
+  protected def filterOnRange(column: Rep[A], value: FilterRange[A]): Rep[Option[Boolean]] =
     value match {
       case FilterRange(Some(from), Some(to)) => column >= from && column <= to
       case FilterRange(None, Some(to)) => column <= to
       case FilterRange(Some(from), None) => column >= from
       case _ => LiteralColumn(Some(true))
     }
+
+  protected def filterOnAlternative(column: Rep[A], value: FilterAlternative[A]): Rep[Option[Boolean]] ={
+    val initial: Rep[Option[Boolean]] = LiteralColumn(Some(true))
+    value.options.foldLeft(initial){
+     _ || filterOnValue(column, _)
+    }
+  }
+
+  //TODO Options?
+  protected def filterShapes(column: Rep[A]): PartialFunction[Any, Rep[Option[Boolean]]] = {
+    case range: FilterRange[A] => filterOnRange(column, range)
+    case alternative: FilterAlternative[A] => filterOnAlternative(column, alternative)
+    case value: A => filterOnValue(column, value)
+    case value => throw new IllegalAccessException(s"Bad shape: $value for column: $column for ") //TODO shape -> ???
   }
 }
 
-class IgonredField[T: BaseTypedType] extends MappedFilterField[T, Any] {
-  override protected def filterOnColumn(column: Rep[T])(value: Any): Rep[Option[Boolean]] = LiteralColumn(Some(true))
+class EnumField[T <: Enumeration](implicit tm: BaseTypedType[T#Value]) extends MappedFilterField[T#Value]
+
+
+class IgonredField[T: BaseTypedType] extends FilterField {
+  override def doFilter(column: Rep[_])(value: Any): Rep[Option[Boolean]] = LiteralColumn(Some(true))
 }

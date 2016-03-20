@@ -1,13 +1,14 @@
 package org.virtuslab.beholder.suites
 
 import org.virtuslab.beholder.filters.{ FilterConstrains, FilterAPI, FilterDefinition }
+import org.virtuslab.beholder.model._
 import org.virtuslab.beholder.view.{UserMachineViewRow, UserMachinesView}
-import org.virtuslab.beholder.AppTest
+import org.virtuslab.beholder.{BaseTest, AppTest}
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-trait BaseSuite extends UserMachinesView {
+trait BaseSuite extends UserMachinesView with BaseTest {
   self: AppTest =>
-  def createFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow]
+  def createUserUserMachineFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow]
 
   protected def baseFilterTest[A](testImplementation: BaseFilterData => A) = rollbackWithModel {
     implicit session: Session =>
@@ -18,7 +19,7 @@ trait BaseSuite extends UserMachinesView {
 
     val view = createUsersMachineView
 
-    lazy val filter = createFilter(this)
+    lazy val userMachineFilter = createUserUserMachineFilter(this)
 
     lazy val baseFilter = FilterDefinition.empty
 
@@ -36,12 +37,16 @@ trait BaseSuite extends UserMachinesView {
         )
       )
 
-    lazy val allFromDb: Seq[UserMachineViewRow] = view.list
+    lazy val allUserMachineRows: Seq[UserMachineViewRow] = view.list
+
+    lazy val allProjects: Seq[Project] = TableQuery[Projects].list
   }
 
-  def doFilters(data: BaseFilterData, currentFilter: FilterDefinition): Seq[UserMachineViewRow] = {
-    import data._
+  def filterUserMachines(data: BaseFilterData, currentFilter: FilterDefinition): Seq[UserMachineViewRow] =
+    doFilter(data.userMachineFilter, data, currentFilter)
 
+  def doFilter[E](filter: FilterAPI[E], data: BaseFilterData, currentFilter: FilterDefinition): Seq[E] ={
+    import data._
     val res = filter.filterWithTotalEntitiesNumber(currentFilter)
     res.content
   }

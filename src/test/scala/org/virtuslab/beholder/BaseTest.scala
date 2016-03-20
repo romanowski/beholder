@@ -28,6 +28,8 @@ trait ModelIncluded {
 
   lazy val TeamsRepository = new TeamsRepository {}
 
+  lazy val ProjectRepository = new ProjectRepository()
+
   lazy val machineParameterRepository = new MachineParameterRepository {}
 
   lazy val userMachineQuery = TableQuery[UserMachines]
@@ -39,6 +41,7 @@ trait ModelIncluded {
       TestInvoker.invokeAction(userMachineQuery.schema.create)
       machineParameterRepository.create()
       TeamsRepository.create()
+      ProjectRepository.create()
 
       func(session)
   }
@@ -75,6 +78,12 @@ trait ModelIncluded {
     val teams = Seq(Team(None, user1.id.get, "core", "Ubuntu"))
       .map(t => t.copy(id = Some(TeamsRepository.save(t))))
 
+    val projects = Seq(
+      Project(None, "Beholder", None, user1.id.get, ProjectType.Outer),
+      Project(None, "Unicorn", None, user2.id.get, ProjectType.Outer),
+      Project(None, "ProjectX", teams.head.id, user1.id.get, ProjectType.Inner),
+      Project(None, "ProjectX-2.0", teams.head.id, user2.id.get, ProjectType.Evaluation)
+    )
   }
 }
 

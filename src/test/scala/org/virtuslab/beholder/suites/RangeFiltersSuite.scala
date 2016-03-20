@@ -6,17 +6,15 @@ import org.virtuslab.beholder.filters.FilterRange
 trait RangeFiltersSuite extends BaseSuite {
   self: AppTest =>
 
-  behavior of "range filters"
-
   it should "should take int range correctly" in baseFilterTest {
     data =>
       import data._
 
       val coreRange = FilterRange(Some(1), Some(4))
 
-      val coreRangeData = doFilters(data, updatedDefinition("cores", coreRange))
+      val coreRangeData = filterUserMachines(data, updatedDefinition("cores", coreRange))
 
-      coreRangeData should contain theSameElementsAs allFromDb
+      coreRangeData should contain theSameElementsAs allUserMachineRows
   }
 
   it should "should take BigDecimal range correctly" in baseFilterTest {
@@ -33,10 +31,10 @@ trait RangeFiltersSuite extends BaseSuite {
           }
 
           import data._
-          val fromDbFilteredByCapacity = allFromDb.filter(a => isInRange(minCapacity, maxCapacity, a.capacity))
+          val fromDbFilteredByCapacity = allUserMachineRows.filter(a => isInRange(minCapacity, maxCapacity, a.capacity))
           val capacityRange = FilterRange(minCapacity, maxCapacity)
 
-          val coreRangeData = doFilters(data, updatedDefinition("capacity", capacityRange))
+          val coreRangeData = filterUserMachines(data, updatedDefinition("capacity", capacityRange))
 
           coreRangeData should contain theSameElementsAs fromDbFilteredByCapacity
         }

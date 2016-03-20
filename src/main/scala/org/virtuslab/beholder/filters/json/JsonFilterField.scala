@@ -5,42 +5,71 @@ import play.api.libs.functional.syntax._
 
 import slick.ast.BaseTypedType
 import play.api.libs.json._
-import play.api.libs.json.Format
+
+import scala.reflect.ClassTag
 
 trait JsonFilterField {
   def fieldTypeDefinition: JsValue
 
-  def readFilter(value: JsValue): JsResult[Any] //= filterFormat.reads(value)
+  def readFilter(value: JsValue): JsResult[Any]
 
-  def writeFilter(value: Any): JsValue //= filterFormat.writes(value.asInstanceOf[B])
+  def writeFilter(value: Any): JsValue
 
   def isIgnored = false
 }
 
-trait MappedJsonFilterField[A, B] extends JsonFilterField {
-  protected def filterFormat: Format[B]
+trait MappedJsonFilterField[B] extends JsonFilterField {
+  protected def valueFormat: Format[B]
 
-  override def readFilter(value: JsValue): JsResult[Any] = filterFormat.reads(value)
+  protected val rangeFormat: Format[FilterRange[B]] = {
+    val defaultFormat:Format[FilterRange[B]] = ((__ \ "from").formatNullable(valueFormat) and
+      (__ \ "to").formatNullable(valueFormat))(FilterRange.apply, unlift(FilterRange.unapply))
 
-  override def writeFilter(value: Any): JsValue = filterFormat.writes(value.asInstanceOf[B])
+
+    new Format[FilterRange[B]]{
+      override def writes(o: FilterRange[B]): JsValue = defaultFormat.writes(o)
+
+      override def reads(json: JsValue): JsResult[FilterRange[B]] =
+        defaultFormat.reads(json).filterNot(JsError("Range cannot be empty!"))(_.isEmpty)
+    }
+  }
+
+
+
+
+  protected val alternativeFormat: Format[FilterAlternative[B]] = {
+    implicit def forValue = valueFormat
+
+    val reads = JsPath.read[Seq[B]].map(FilterAlternative.apply)
+    val seqWrites = JsPath.write[Seq[B]]
+    val writes = Writes[FilterAlternative[B]](v => seqWrites.writes(v.options))
+    Format(reads, writes)
+  }
+
+
+  def tryAlso(current: JsResult[Any], newOne: JsResult[Any]): JsResult[Any] = {
+    (current, newOne) match{
+      case (error: JsError, error2: JsError) => error ++ error2
+      case (error: JsError, succes: JsSuccess[Any]) => succes
+      case _ => current
+    }
+  }
+
+  override def readFilter(value: JsValue): JsResult[Any] =
+    tryAlso(rangeFormat.reads(value), tryAlso(alternativeFormat.reads(value), valueFormat.reads(value)))
+
+  override def writeFilter(value: Any): JsValue = value match{
+    case range: FilterRange[B] => rangeFormat.writes(range)
+    case alternative: FilterAlternative[B] => alternativeFormat.writes(alternative)
+    case value: B => valueFormat.writes(value)
+    case _ => ??? //TODO
+  }
 }
 
-class IdentityJsonField[A: BaseTypedType: JsonTypedType] extends IdentityField[A] with MappedJsonFilterField[A, A] {
-  private val jsonTypeType = implicitly[JsonTypedType[A]]
+class IdentityJsonField[A: ClassTag: BaseTypedType: JsonTypedType] extends MappedFilterField[A] with MappedJsonFilterField[A] {
+  private def jsonTypeType = implicitly[JsonTypedType[A]]
 
-  override protected def filterFormat: Format[A] = jsonTypeType.format
-
-  override def fieldTypeDefinition: JsValue = jsonTypeType.fieldJsonDefinition
-}
-
-class IdentityRangeJsonField[A: BaseTypedType: JsonTypedType]
-    extends RangeField[A] with MappedJsonFilterField[A, FilterRange[A]] {
-
-  private val jsonTypeType = implicitly[JsonTypedType[A]]
-
-  override protected def filterFormat: Format[FilterRange[A]] =
-    ((__ \ "from").formatNullable(jsonTypeType.format) and
-    (__ \ "to").formatNullable(jsonTypeType.format))(FilterRange.apply, unlift(FilterRange.unapply))
+  override protected def valueFormat: Format[A] = jsonTypeType.format
 
   override def fieldTypeDefinition: JsValue = jsonTypeType.fieldJsonDefinition
 }

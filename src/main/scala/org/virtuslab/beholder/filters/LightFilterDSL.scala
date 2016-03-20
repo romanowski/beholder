@@ -6,18 +6,28 @@ import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 import slick.ast.BaseTypedType
 
-object LightDSLFilter extends DSLBase[FilterField, LightFilter, BaseTypedType] {
+import scala.reflect.ClassTag
+
+class LightDslMapper[A](implicit val btt: BaseTypedType[A], val ct: ClassTag[A])
+
+object LightDslMapper{
+  implicit def create[A: ClassTag: BaseTypedType] = new LightDslMapper[A]
+}
+
+object LightDSLFilter extends DSLBase[FilterField, LightFilter, LightDslMapper] {
   override def create[E, T <: BaseView[E]](viewFilterState: LightDSLFilter.ViewFilterState[E, T]): LightFilter[E, T] =
     new ViewBasedFilter[E, T](viewFilterState)
 
   override def create[E, T <: Table[E]](viewFilterState: LightDSLFilter.FilterTableState[E, T]): LightFilter[E, T] =
     new TableBasedFilter[E, T](viewFilterState)
 
-  override def in[T: BaseTypedType]: FilterField with MappedFilterField[T, T] = new IdentityField[T]
-
-  override val inText = new MappedFilterField[String, String] {
-    override def filterOnColumn(column: Rep[String])(data: String): Rep[Option[Boolean]] = column.? ilike s"%${escape(data)}%"
+  override def in[T: LightDslMapper]: FilterField with MappedFilterField[T] = {
+    val formatter: LightDslMapper[T] = implicitly
+    import formatter._
+    new MappedFilterField[T]
   }
 
-  override def inRange[T: BaseTypedType]: FilterField with MappedFilterField[T, FilterRange[T]] = new RangeField[T]
+  override val inText = new MappedFilterField[String] {
+    override protected def filterOnValue(column: Rep[String], data: String): Rep[Option[Boolean]] = column.? ilike s"%${escape(data)}%"
+  }
 }

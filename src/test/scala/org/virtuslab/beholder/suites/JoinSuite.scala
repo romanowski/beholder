@@ -11,6 +11,7 @@ trait JoinSuite extends FiltersTestSuite {
   self: AppTest =>
 
   //TODO add 3 nested deep TODO negative tests
+  //TODO test range and alternatives
 
   def createTeamFilter(data: BaseFilterData): LightFilter[Team, Teams]
 
@@ -18,7 +19,7 @@ trait JoinSuite extends FiltersTestSuite {
 
   private val adminJoinName = "admin"
 
-  final override def createFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
+  final override def createUserUserMachineFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
     val userMachineFilter = createUserMachineFilter(data)
     val teamFilter = createTeamFilter(data)
 
@@ -35,11 +36,11 @@ trait JoinSuite extends FiltersTestSuite {
         val allTeams = TableQuery[Teams].list.toSet
 
         val fromDbOrderedByCores =
-          allFromDb.filter(v => allTeams.exists(t => t.admin == v.userId && t.teamName == testTeamName))
+          allUserMachineRows.filter(v => allTeams.exists(t => t.admin == v.userId && t.teamName == testTeamName))
 
         val filterDefinition = addJoin(adminJoinName, FilterConstrains(fieldConstrains = Map("teamName" -> testTeamName)))
 
-        val orderByCore = doFilters(data, filterDefinition)
+        val orderByCore = filterUserMachines(data, filterDefinition)
 
         orderByCore should contain theSameElementsInOrderAs fromDbOrderedByCores
       }
@@ -55,11 +56,11 @@ trait JoinSuite extends FiltersTestSuite {
       val allTeams = TableQuery[Teams].list.toSet
 
       val fromDbOrderedByCores =
-        allFromDb.filter(v => allTeams.exists(t => t.admin == v.userId && t.system == "Ubuntu"))
+        allUserMachineRows.filter(v => allTeams.exists(t => t.admin == v.userId && t.system == "Ubuntu"))
 
       val filterDefinition = addJoin(adminJoinName, FilterConstrains(fieldConstrains = Map("system" -> "Ubuntu")))
 
-      val orderByCore = doFilters(data, filterDefinition)
+      val orderByCore = filterUserMachines(data, filterDefinition)
 
       orderByCore should contain theSameElementsInOrderAs fromDbOrderedByCores
   }
@@ -70,7 +71,7 @@ trait JoinSuite extends FiltersTestSuite {
 
       val filterDefinition = addJoin(adminJoinName, FilterConstrains(fieldConstrains = Map("nonExisting" -> "bum")))
 
-      intercept[IllegalArgumentException] { doFilters(data, filterDefinition) }
+      intercept[IllegalArgumentException] { filterUserMachines(data, filterDefinition) }
   }
 
 }

@@ -37,7 +37,11 @@ object FilterDefinition {
   def empty = FilterDefinition(None, None, Nil, FilterConstrains(Map(), Map()))
 }
 
-case class FilterRange[T](from: Option[T], to: Option[T])
+case class FilterRange[T](from: Option[T], to: Option[T]){
+  def isEmpty = from.isEmpty && to.isEmpty
+}
+
+case class FilterAlternative[T](options: Seq[T])
 
 case class FilterResult[T](content: Seq[T], total: Int) {
 

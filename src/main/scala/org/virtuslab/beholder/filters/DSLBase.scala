@@ -42,8 +42,12 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, T <: Table[E]] <: 
     def and(name: String): AndDSL = new AndDSL(name)
 
     class AndDSL(name: String) {
-      def as(field: DSLField): ViewFilterState[E, T] =
+      def asUntyped(field: DSLField): ViewFilterState[E, T] =
         ViewFilterState(table, fields + (name -> field))
+
+
+      def as[A: FieldMapper](field: MappedFilterField[A] with DSLField): ViewFilterState[E, T] =
+        asUntyped(field)
     }
   }
 
@@ -68,7 +72,7 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, T <: Table[E]] <: 
           )
       }
 
-      case class as[A: FieldMapper, B](field: MappedFilterField[A, B] with DSLField) {
+      case class as[A: FieldMapper, B](field: MappedFilterField[A] with DSLField) {
         def from(column: T => Rep[A]): FilterTableState[E, T] =
           new FilterTableState(
             table = table,
@@ -97,11 +101,9 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, T <: Table[E]] <: 
   def fromView[E, T <: BaseView[E]](table: Query[T, E, Seq]): ViewFilterState[E, T] =
     new ViewFilterState(table, Map.empty)
 
-  def in[T: FieldMapper]: DSLField with MappedFilterField[T, T]
+  def in[T: FieldMapper]: DSLField with MappedFilterField[T]
 
-  def inText: DSLField with MappedFilterField[String, String]
+  def inText: DSLField with MappedFilterField[String]
 
-  def inRange[T: FieldMapper]: DSLField with MappedFilterField[T, FilterRange[T]]
-
-  def inEnum[T <: Enumeration]: DSLField with MappedFilterField[T#Value, T#Value] = ??? // TODO implement this!
+  def inEnum[T <: Enumeration]: DSLField with MappedFilterField[T#Value] = ??? // TODO implement this!
 }

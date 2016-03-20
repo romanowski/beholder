@@ -1,6 +1,7 @@
 package org.virtuslab.beholder.json
 
 import java.sql.Date
+import org.joda.time.DateTime
 import org.virtuslab.beholder.view.UserMachinesView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
@@ -16,11 +17,13 @@ class FormatterTestSuite extends AppTest with UserMachinesView with ModelInclude
 
   import org.virtuslab.beholder.filters.json.JsonDSL._
 
+  //TODO test ranges, and alternatives for all fields
+
   private def createFilter(labels: String => String)(implicit session: Session) = {
     val view = createUsersMachineView
     fromView(view) and
       "email" as in[String] and
-      "system" as inRange[String] and
+      "system" as in[String] and
       "cores" as in[Int] and
       "created" as in[Date] and
       "capacity" as in[BigDecimal]
@@ -76,8 +79,13 @@ class FormatterTestSuite extends AppTest with UserMachinesView with ModelInclude
         val forJson = data.map(d => d._1 -> d._2._2)
         val forDefinion = data.map(d => d._1 -> d._2._1)
 
-        val json = createJson("email" -> JsString("ala"))
-        val definition = createFilterDefinition(_.addFieldConstrain("email")("ala"))
+        val json = createJson(forJson:_*)
+        val definition = createFilterDefinition{
+          filter => forDefinion.foldLeft(filter){
+            case (filter, (name, value)) =>
+              filter.addFieldConstrain(name)(value)
+          }
+        }
 
         testFormat(format)(json, definition)
       }
@@ -96,18 +104,18 @@ class FormatterTestSuite extends AppTest with UserMachinesView with ModelInclude
         "capacity" -> (capacity -> JsNumber(capacity))
       )
 
-      val date = new Date(2001, 23, 12)
+      val date = new Date(DateTime.now().withTimeAtStartOfDay.getMillis)
       val dateFormatter = implicitly[Format[Date]]
 
       testFilterFormatter(
-        "created" -> (date -> JsNumber(capacity) -> dateFormatter.writes(date))
+        "created" -> (date -> dateFormatter.writes(date))
       )
 
       testFilterFormatter(
         "capacity" -> (capacity -> JsNumber(capacity)),
         "cores" -> (1 -> JsNumber(1)),
         "email" -> ("ala" -> JsString("ala")),
-        "created" -> (date -> JsNumber(capacity) -> dateFormatter.writes(date))
+        "created" -> (date -> dateFormatter.writes(date))
       )
   }
 

@@ -23,33 +23,20 @@ class JsonDSLJoinFiltersTests extends AppTest with JoinSuite {
       "email" as in[String] and
       "system" as in[String] and
       "cores" as in[Int] and
-      "created" as inRange[Date] and
+      "created" as in[Date] and
       "capacity" as in[BigDecimal]
 }
 
 class JsonFiltersTests extends AppTest with FiltersTestSuite {
-  def createFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
+  def createUserUserMachineFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
     import JsonDSL._
 
     fromView(data.view) and
       "email" as in[String] and
       "system" as in[String] and
       "cores" as in[Int] and
-      "created" as inRange[Date] and
+      "created" as in[Date] and
       "capacity" as in[BigDecimal]
 
-  }
-}
-
-class JsonFiltersRangeTests extends AppTest with RangeFiltersSuite {
-  def createFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
-    import JsonDSL._
-
-    fromView(data.view) and
-      "email" as inText and
-      "system" as inText and
-      "cores" as inRange[Int] and
-      "created" as inRange[Date] and
-      "capacity" as inRange[BigDecimal]
   }
 }
