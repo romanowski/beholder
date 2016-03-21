@@ -3,12 +3,12 @@ package org.virtuslab.beholder.suites
 import java.sql.Date
 
 import org.joda.time.DateTime
-import org.virtuslab.beholder.AppTest
 import org.virtuslab.beholder.filters._
+import org.virtuslab.beholder.view.UserMachineViewRow
 
-trait FiltersTestSuite extends BaseSuite with RangeFiltersSuite {
-  self: AppTest =>
+trait FiltersTestSuite extends AbstractFiltersTestSuite[UserMachineViewRow]
 
+trait AbstractFiltersTestSuite[E] extends BaseSuite[E] with RangeFiltersSuite[E] {
 
   // TODO add enums
   // TODO add negative tests
@@ -21,9 +21,8 @@ trait FiltersTestSuite extends BaseSuite with RangeFiltersSuite {
   it should "query all entities for empty filter" in baseFilterTest {
     data =>
       import data._
-      val all = filterUserMachines(data, baseFilter)
 
-      all should contain theSameElementsAs allUserMachineRows
+      filtering(FilterDefinition.empty) shouldResultIn allUserMachineRows
   }
 
   it should "order by argument asc correctly" in baseFilterTest {
@@ -31,45 +30,45 @@ trait FiltersTestSuite extends BaseSuite with RangeFiltersSuite {
       import data._
 
       val fromDbOrderedByCores = allUserMachineRows.sortBy(view => (view.cores, view.email))
-      val orderByCore = filterUserMachines(data, baseFilter.withOrder("cores"))
+      val orderByCore = FilterDefinition.empty.withOrder("cores")
 
-      orderByCore should contain theSameElementsInOrderAs fromDbOrderedByCores
+      filtering(orderByCore) shouldResultIn fromDbOrderedByCores
   }
 
   it should "order by argument desc correctly" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = filterUserMachines(data, baseFilter.withOrder("cores", asc = false))
+      val orderByCoreDesc =  FilterDefinition.empty.withOrder("cores", asc = false)
       val fromDbOrderedByCoresDesc = allUserMachineRows.sortBy(view => (-view.cores, view.email))
 
-      orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc
   }
 
   it should "take correctly" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = filterUserMachines(data, baseFilter.withOrder("cores", asc = false).copy(take = Some(2)))
+      val orderByCoreDesc = FilterDefinition.empty.withOrder("cores", asc = false).copy(take = Some(2))
       val fromDbOrderedByCoresDesc = allUserMachineRows.sortBy(view => (-view.cores, view.email))
 
-      orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc.take(2)
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc.take(2)
   }
 
   it should "skip correctly" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = filterUserMachines(data, baseFilter.withOrder("cores", asc = false).copy(skip = Some(1)))
+      val orderByCoreDesc = FilterDefinition.empty.withOrder("cores", asc = false).copy(skip = Some(1))
       val fromDbOrderedByCoresDesc = allUserMachineRows.sortBy(view => (-view.cores, view.email))
 
-      orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc.drop(1)
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc.drop(1)
   }
 
   it should "filter by int field" in baseFilterTest {
     data =>
       import data._
-      val orderByCoreDesc = filterUserMachines(data, updatedDefinition("cores", 4))
+      val orderByCoreDesc = updatedDefinition("cores", 4)
       val fromDbOrderedByCoresDesc = allUserMachineRows.filter(_.cores == 4)
 
-      orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc
   }
 
   //h2db does not have ilike operator
@@ -77,10 +76,10 @@ trait FiltersTestSuite extends BaseSuite with RangeFiltersSuite {
     data =>
       import data._
       val newSystem = "buntu"
-      val orderByCoreDesc = filterUserMachines(data, updatedDefinition("system", newSystem))
+      val orderByCoreDesc = updatedDefinition("system", newSystem)
       val fromDbOrderedByCoresDesc = allUserMachineRows.filter(_.system.contains(newSystem))
 
-      orderByCoreDesc should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc
   }
 
   it should "not crash for date option" in baseFilterTest {
@@ -92,22 +91,6 @@ trait FiltersTestSuite extends BaseSuite with RangeFiltersSuite {
       val newVersion = updatedDefinition("created", dataRange)
       val fromdbWithCorrectDates = allUserMachineRows.filter(_.created.before(toDate))
 
-      val withCorrectDates = filterUserMachines(data, newVersion)
-      withCorrectDates should contain theSameElementsInOrderAs fromdbWithCorrectDates
-  }
-
-  it should "skip correctly and return correct total amount of entities" in baseFilterTest {
-    data =>
-      import data._
-
-      val filterData = userMachineFilter.filterWithTotalEntitiesNumber(
-        baseFilter.withOrder("cores", asc = false).copy(skip = Some(1))
-      )
-      val fromDbOrderedByCoresDesc = allUserMachineRows.sortBy(view => (-view.cores, view.email)).drop(1)
-
-      filterData.content should contain theSameElementsInOrderAs fromDbOrderedByCoresDesc
-
-      filterData.total shouldEqual allUserMachineRows.size
-
+      filtering(newVersion) shouldResultIn fromdbWithCorrectDates
   }
 }

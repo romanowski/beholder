@@ -1,6 +1,7 @@
 package org.virtuslab.beholder.filters
 package json
 
+import org.virtuslab.unicorn.LongUnicornPlay
 import play.api.libs.json._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
@@ -28,14 +29,14 @@ trait JsonFilter {
   def nestedFilterFor(name: String): Option[JsonFilter] = nested.get(name)
 }
 
-trait JsonFilterImpl[E, T <: Table[E]] extends LightFilter[E, T] with JsonAwareFilter[E] {
-  override def name: String = table.shaped.value.tableName // Can be override
+trait JsonFilterImpl[E, TE, T] extends LightFilter[E, TE, T] with JsonAwareFilter[E] {
+  override def name: String = "ala" // TODO baseQuery.shaped.value.tableName // Can be override
 
   private var _nested: Map[String, JsonFilter] = Map()
 
   override protected def nested: Map[String, JsonFilter] = _nested
 
-  override def join[TE, TT <: Table[TE]](name: String, from: LightFilter[TE, TT])(on: (T, TT) => Rep[Boolean]): LightFilter[E, T] = {
+  override def join[NET, NT](name: String, from: LightFilter[_, NET, NT])(on: (T, NT) => Rep[Boolean])(implicit t1Shape: Shape[FlatShapeLevel, T, TE, T]): LightFilter[E, TE, T] = {
     from match {
       case jsonFilter: JsonFilter =>
         _nested = _nested + (name -> jsonFilter)

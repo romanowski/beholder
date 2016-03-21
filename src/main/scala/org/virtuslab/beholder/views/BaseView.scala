@@ -7,7 +7,6 @@ import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 import scala.language.existentials
 import slick.lifted.{ TableQuery, Tag }
 
-
 abstract class BaseView[Entity](tag: Tag, val viewName: String) extends BaseTable[Entity](tag, viewName) {
 
   /**

@@ -16,7 +16,7 @@ object ILikeExtension {
 
   /**
    * escape text so can spoil sql reqexp
- *
+   *
    * @param text
    * @return
    */
@@ -35,7 +35,6 @@ object ILikeExtension {
  * Adds ilike operator to slick.
  */
 class ILikeExtension[B](val c: Rep[B]) extends AnyVal with ExtensionMethods[String, B] {
-
 
   override protected[this] implicit def b1Type: TypedType[String] = implicitly
 

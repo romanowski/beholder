@@ -19,8 +19,6 @@ private[beholder] object FilterableViewsGenerator extends App {
     val columns = fill(nr => s"\n    (String, Rep[A$nr])")(nr)
     val justColumns = fill(nr => s"Rep[A$nr]")(nr)
 
-
-
     val finalTuple = fill("name" + _)
     val matchParameters = fill(nr => s"(name$nr, c$nr)")
     val mapping = fill("c" + _)

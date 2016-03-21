@@ -1,36 +1,46 @@
 package org.virtuslab.beholder.suites
 
-import org.virtuslab.beholder.filters.{ FilterConstrains, FilterAPI, FilterDefinition }
+import org.virtuslab.beholder.filters.{FilterResult, FilterConstrains, FilterAPI, FilterDefinition}
 import org.virtuslab.beholder.model._
-import org.virtuslab.beholder.view.{UserMachineViewRow, UserMachinesView}
-import org.virtuslab.beholder.{BaseTest, AppTest}
+import org.virtuslab.beholder.view.{ UserMachineViewRow, UserMachinesView }
+import org.virtuslab.beholder.{ BaseTest, AppTest }
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-trait BaseSuite extends UserMachinesView with BaseTest {
-  self: AppTest =>
-  def createUserUserMachineFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow]
+trait BaseSuite[E] extends UserMachinesView with BaseTest {
+
+  def createUserMachinesFilter(data: BaseFilterData): FilterAPI[E]
 
   protected def baseFilterTest[A](testImplementation: BaseFilterData => A) = rollbackWithModel {
     implicit session: Session =>
       testImplementation(new BaseFilterData())
   }
 
+  protected def compare(result: FilterResult[E], expected: Seq[UserMachineViewRow]): Unit =
+    result.content should contain theSameElementsAs expected
+
+
   protected class BaseFilterData(implicit val session: Session) extends PopulatedDatabase {
+
+    case class filtering(fromFilter: FilterDefinition) {
+      def shouldResultIn(expected: Seq[UserMachineViewRow]): Unit = {
+        val result = doFullFilter(BaseFilterData.this, fromFilter)
+
+        compare(result, expected)
+
+        result.total shouldEqual allUserMachineRows.size
+      }
+    }
 
     val view = createUsersMachineView
 
-    lazy val userMachineFilter = createUserUserMachineFilter(this)
-
-    lazy val baseFilter = FilterDefinition.empty
-
-    def updatedDefinition(field: String, value: Any, definition: FilterDefinition = baseFilter) =
+    def updatedDefinition(field: String, value: Any, definition: FilterDefinition = FilterDefinition.empty) =
       definition.copy(
         constrains = definition.constrains.copy(
           fieldConstrains = definition.constrains.fieldConstrains + (field -> value)
         )
       )
 
-    def addJoin(name: String, constrains: FilterConstrains, definition: FilterDefinition = baseFilter) =
+    def addJoin(name: String, constrains: FilterConstrains, definition: FilterDefinition = FilterDefinition.empty) =
       definition.copy(
         constrains = definition.constrains.copy(
           nestedConstrains = definition.constrains.nestedConstrains + (name -> constrains)
@@ -42,12 +52,12 @@ trait BaseSuite extends UserMachinesView with BaseTest {
     lazy val allProjects: Seq[Project] = TableQuery[Projects].list
   }
 
-  def filterUserMachines(data: BaseFilterData, currentFilter: FilterDefinition): Seq[UserMachineViewRow] =
-    doFilter(data.userMachineFilter, data, currentFilter)
-
-  def doFilter[E](filter: FilterAPI[E], data: BaseFilterData, currentFilter: FilterDefinition): Seq[E] ={
+  def doFullFilter(data: BaseFilterData, currentFilter: FilterDefinition): FilterResult[E] = {
     import data._
-    val res = filter.filterWithTotalEntitiesNumber(currentFilter)
-    res.content
+    createUserMachinesFilter(data).filterWithTotalEntitiesNumber(currentFilter)
+  }
+
+  def doFilter(data: BaseFilterData, currentFilter: FilterDefinition): Seq[E] = {
+    doFullFilter(data, currentFilter).content
   }
 }

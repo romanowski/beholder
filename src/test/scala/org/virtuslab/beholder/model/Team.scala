@@ -23,8 +23,7 @@ case class Team(
   id: Option[TeamId],
   admin: UserId,
   teamName: String,
-  system: String
-) extends WithId[TeamId]
+  system: String) extends WithId[TeamId]
 
 /** Table definition for Teams. */
 class Teams(tag: Tag) extends IdTable[TeamId, Team](tag, "TeamS") {

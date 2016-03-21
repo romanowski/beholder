@@ -5,6 +5,7 @@ import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 class ViewsTest extends AppTest with UserMachinesView {
 
+  //TODO rename this!!
   "view" should "be queryable" in rollbackWithModel {
     implicit session =>
 

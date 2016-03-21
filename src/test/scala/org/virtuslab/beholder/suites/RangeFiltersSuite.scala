@@ -2,9 +2,9 @@ package org.virtuslab.beholder.suites
 
 import org.virtuslab.beholder.AppTest
 import org.virtuslab.beholder.filters.FilterRange
+import org.virtuslab.beholder.view.UserMachineViewRow
 
-trait RangeFiltersSuite extends BaseSuite {
-  self: AppTest =>
+trait RangeFiltersSuite[E] extends BaseSuite[E] {
 
   it should "should take int range correctly" in baseFilterTest {
     data =>
@@ -12,9 +12,9 @@ trait RangeFiltersSuite extends BaseSuite {
 
       val coreRange = FilterRange(Some(1), Some(4))
 
-      val coreRangeData = filterUserMachines(data, updatedDefinition("cores", coreRange))
+      val coreRangeData = updatedDefinition("cores", coreRange)
 
-      coreRangeData should contain theSameElementsAs allUserMachineRows
+      filtering(coreRangeData) shouldResultIn allUserMachineRows
   }
 
   it should "should take BigDecimal range correctly" in baseFilterTest {
@@ -34,9 +34,9 @@ trait RangeFiltersSuite extends BaseSuite {
           val fromDbFilteredByCapacity = allUserMachineRows.filter(a => isInRange(minCapacity, maxCapacity, a.capacity))
           val capacityRange = FilterRange(minCapacity, maxCapacity)
 
-          val coreRangeData = filterUserMachines(data, updatedDefinition("capacity", capacityRange))
+          val coreRangeData = updatedDefinition("capacity", capacityRange)
 
-          coreRangeData should contain theSameElementsAs fromDbFilteredByCapacity
+          filtering(coreRangeData) shouldResultIn fromDbFilteredByCapacity
         }
 
         testCapacityRange(Some(1), Some(3))

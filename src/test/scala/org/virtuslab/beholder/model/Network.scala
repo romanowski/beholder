@@ -27,8 +27,7 @@ case class Network(
   id: Option[NetworkId],
   mask: String,
   address: String,
-  admin: UserId
-) extends WithId[NetworkId]
+  admin: UserId) extends WithId[NetworkId]
 
 /** Table definition for Networks. */
 class Networks(tag: Tag) extends IdTable[NetworkId, Network](tag, "NetworkS") {

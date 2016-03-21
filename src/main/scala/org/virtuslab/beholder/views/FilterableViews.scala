@@ -1,29 +1,29 @@
 package org.virtuslab.beholder.views
 
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
-import slick.lifted.{Shape, RepShape, ShapeLevel}
+import slick.lifted.{ Shape, RepShape, ShapeLevel }
 
 import scala.reflect.ClassTag
-import slick.ast.{BaseTypedType, TypedType}
+import slick.ast.{ BaseTypedType, TypedType }
 
 class FilterShape[T](val tt: TypedType[T], val shape: Shape[FlatShapeLevel, Rep[T], T, Rep[T]])
 
-object FilterShape{
+object FilterShape {
   import scala.language.implicitConversions
 
-  implicit def baseFilter2FilterShape[T](implicit tt: BaseTypedType[T]) : FilterShape[T] = new FilterShape[T](tt, implicitly)
+  implicit def baseFilter2FilterShape[T](implicit tt: BaseTypedType[T]): FilterShape[T] = new FilterShape[T](tt, implicitly)
   implicit def baseFilter2FilterOptionShape[T](implicit tt: BaseTypedType[T]): FilterShape[Option[T]] =
     new FilterShape[Option[T]](implicitly[TypedType[Option[T]]], implicitly)
 }
 
-trait FilterableViewsImplicits{
+trait FilterableViewsImplicits {
   import scala.language.implicitConversions
 
-  protected implicit def fs2S[T:FilterShape] = implicitly[FilterShape[T]].shape
-  protected implicit def fs2TT[T:FilterShape]: TypedType[T] = implicitly[FilterShape[T]].tt
+  protected implicit def fs2S[T: FilterShape] = implicitly[FilterShape[T]].shape
+  protected implicit def fs2TT[T: FilterShape]: TypedType[T] = implicitly[FilterShape[T]].tt
 }
 
-object FilterableViews extends FilterableViewsGenerateCode with FilterableViewsImplicits{
+object FilterableViews extends FilterableViewsGenerateCode with FilterableViewsImplicits {
 
   /**
    * create view with 2 fields
@@ -66,8 +66,8 @@ object FilterableViews extends FilterableViewsGenerateCode with FilterableViewsI
 
   /**
    * Base view for view with 2 fields
-    *
-    * @param name name of view
+   *
+   * @param name name of view
    * @param columnNames names of view columns - columnsNames(0) -> c1 etc
    * @param apply to create entity
    * @param unapply to map entity to tuple
@@ -94,9 +94,7 @@ object FilterableViews extends FilterableViewsGenerateCode with FilterableViewsI
       columnNames(1) -> (_.c2)
     )
 
-    implicit val shape: Shape[_ <: slick.lifted.FlatShapeLevel,
-      (slick.lifted.Rep[A], slick.lifted.Rep[B]),
-      (A, B), _] = implicitly
+    implicit val shape: Shape[_ <: slick.lifted.FlatShapeLevel, (slick.lifted.Rep[A], slick.lifted.Rep[B]), (A, B), _] = implicitly
 
     def * = (c1, c2) <> (apply.tupled, unapply)
   }

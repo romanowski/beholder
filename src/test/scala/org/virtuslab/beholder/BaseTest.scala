@@ -19,8 +19,7 @@ object TestInvoker extends Invoker
 
 trait BaseTest extends FlatSpecLike with Matchers
 
-trait ModelIncluded {
-  self: AppTest =>
+trait ModelIncluded extends AppTest {
 
   lazy val UsersRepository = new UsersRepository {}
 
@@ -33,6 +32,12 @@ trait ModelIncluded {
   lazy val machineParameterRepository = new MachineParameterRepository {}
 
   lazy val userMachineQuery = TableQuery[UserMachines]
+
+  lazy val userJoinMachinesQuery = for {
+    user <- TableQuery[Users]
+    userMachine <- userMachineQuery if user.id === userMachine.userId
+    machine <- TableQuery[Machines] if machine.id === userMachine.machineId
+  } yield (user, machine)
 
   final def rollbackWithModel[A](func: Session => A): A = rollback {
     implicit session: Session =>
@@ -87,14 +92,14 @@ trait ModelIncluded {
   }
 }
 
-trait AppTest extends BaseTest with BeforeAndAfterEach with ModelIncluded {
+trait AppTest extends BaseTest with BeforeAndAfterEach {
 
   private val testDb = Map(
-  "slick.dbs.default.driver" -> "slick.driver.H2Driver$",
-      "slick.dbs.default.db.driver" -> "org.h2.Driver",
-      "slick.dbs.default.db.url" -> "jdbc:h2:mem:beholder",
-      "slick.dbs.default.db.user" -> "sa",
-      "slick.dbs.default.db.password" -> ""
+    "slick.dbs.default.driver" -> "slick.driver.H2Driver$",
+    "slick.dbs.default.db.driver" -> "org.h2.Driver",
+    "slick.dbs.default.db.url" -> "jdbc:h2:mem:beholder",
+    "slick.dbs.default.db.user" -> "sa",
+    "slick.dbs.default.db.password" -> ""
   )
 
   def withApp[A](func: FakeApplication => A): A = {

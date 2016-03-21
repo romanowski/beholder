@@ -2,9 +2,9 @@ package org.virtuslab.beholder.view
 
 import java.sql.Date
 
-import org.virtuslab.beholder.model.{Machines, UserId, Users}
+import org.virtuslab.beholder.model.{ Machines, UserId, Users }
 import org.virtuslab.beholder.views.FilterableViews
-import org.virtuslab.beholder.{AppTest, ModelIncluded, TestInvoker}
+import org.virtuslab.beholder.{ AppTest, ModelIncluded, TestInvoker }
 import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
@@ -14,12 +14,9 @@ case class UserMachineViewRow(
   cores: Int,
   created: Date,
   capacity: Option[BigDecimal],
-  userId: UserId
-)
+  userId: UserId)
 
 trait UserMachinesView extends ModelIncluded {
-  self: AppTest =>
-
 
   def createUsersMachineView(implicit session: Session) = {
     //query that is a base for view
@@ -30,23 +27,21 @@ trait UserMachinesView extends ModelIncluded {
         machine <- TableQuery[Machines] if machine.id === userMachine.machineId
       } yield (user, machine)
 
-      usersMachinesQuery.sortBy(_._2.cores.asc)
-
       val tableQuery = FilterableViews.createView(
         name = "USERS_MACHINE_VIEW",
         UserMachineViewRow.apply _,
         UserMachineViewRow.unapply _,
         baseQuery = usersMachinesQuery
       ) {
-        case (user, machine) =>
-          //naming the fields
-          ("email" -> user.email,
-            "system" -> machine.system,
-            "cores" -> machine.cores,
-            "created" -> machine.created,
-            "capacity" -> machine.capacity,
-            "userId" -> user.id)
-      }
+          case (user, machine) =>
+            //naming the fields
+            ("email" -> user.email,
+              "system" -> machine.system,
+              "cores" -> machine.cores,
+              "created" -> machine.created,
+              "capacity" -> machine.capacity,
+              "userId" -> user.id)
+        }
 
       TestInvoker.invokeAction(tableQuery.viewDDL.create)
     }.tableQuery

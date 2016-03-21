@@ -26,8 +26,7 @@ case class User(
   id: Option[UserId],
   email: String,
   firstName: String,
-  lastName: String
-) extends WithId[UserId]
+  lastName: String) extends WithId[UserId]
 
 /** Table definition for users. */
 class Users(tag: Tag) extends IdTable[UserId, User](tag, "USERS") {

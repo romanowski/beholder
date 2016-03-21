@@ -29,8 +29,7 @@ case class Machine(
   system: String,
   cores: Int,
   created: Date,
-  capacity: Option[BigDecimal]
-) extends WithId[MachineId]
+  capacity: Option[BigDecimal]) extends WithId[MachineId]
 
 /** Table definition for machines. */
 class Machines(tag: Tag) extends IdTable[MachineId, Machine](tag, "MACHINES") {

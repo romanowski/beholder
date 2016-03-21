@@ -5,13 +5,11 @@ import org.joda.time.DateTime
 import org.virtuslab.beholder.view.UserMachinesView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-import org.virtuslab.beholder.{ModelIncluded, AppTest}
+import org.virtuslab.beholder.{ ModelIncluded, AppTest }
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.filters.json._
 
 import play.api.libs.json._
-
-
 
 class FormatterTestSuite extends AppTest with UserMachinesView with ModelIncluded {
 
@@ -43,26 +41,25 @@ class FormatterTestSuite extends AppTest with UserMachinesView with ModelInclude
     result.isError shouldEqual true
   }
 
-  private def testFormat(format: Format[FilterDefinition])(js: JsValue, filter: FilterDefinition) ={
+  private def testFormat(format: Format[FilterDefinition])(js: JsValue, filter: FilterDefinition) = {
     val filterFromJs = format.reads(js)
 
     filterFromJs shouldEqual JsSuccess(filter)
 
     val jsFromFilter = format.writes(filter)
 
-    jsFromFilter shouldEqual(js)
+    jsFromFilter shouldEqual (js)
   }
 
   it should "create filter definition from range fields" in rollbackWithModel {
     implicit session =>
       val format = createFormat(identity)
 
-      def testRange(from: Option[String], to: Option[String])={
-        val rangeJs = JsObject(Seq("from" -> from, "to" -> to).collect{case (name, Some(value)) => name -> JsString(value)})
+      def testRange(from: Option[String], to: Option[String]) = {
+        val rangeJs = JsObject(Seq("from" -> from, "to" -> to).collect { case (name, Some(value)) => name -> JsString(value) })
         val js = createJson("system" -> rangeJs)
 
-
-        val filter = createFilterDefinition(_.addFieldConstrain("system" )(FilterRange(from, to)))
+        val filter = createFilterDefinition(_.addFieldConstrain("system")(FilterRange(from, to)))
         testFormat(format)(js, filter)
       }
 
@@ -75,16 +72,17 @@ class FormatterTestSuite extends AppTest with UserMachinesView with ModelInclude
     implicit session =>
       val format = createFormat(identity)
 
-      def testFilterFormatter(data: (String, (Any, JsValue))*)(implicit session: Session) ={
+      def testFilterFormatter(data: (String, (Any, JsValue))*)(implicit session: Session) = {
         val forJson = data.map(d => d._1 -> d._2._2)
         val forDefinion = data.map(d => d._1 -> d._2._1)
 
-        val json = createJson(forJson:_*)
-        val definition = createFilterDefinition{
-          filter => forDefinion.foldLeft(filter){
-            case (filter, (name, value)) =>
-              filter.addFieldConstrain(name)(value)
-          }
+        val json = createJson(forJson: _*)
+        val definition = createFilterDefinition {
+          filter =>
+            forDefinion.foldLeft(filter) {
+              case (filter, (name, value)) =>
+                filter.addFieldConstrain(name)(value)
+            }
         }
 
         testFormat(format)(json, definition)
@@ -133,15 +131,14 @@ class FormatterTestSuite extends AppTest with UserMachinesView with ModelInclude
       val format = createFormat(identity)
 
       val js = JsObject(Seq(
-         "take" -> JsNumber(1),
-           "skip" -> JsNumber(2)
+        "take" -> JsNumber(1),
+        "skip" -> JsNumber(2)
       ))
 
       val expected = FilterDefinition.empty.copy(take = Some(1), skip = Some(2))
 
       testFormat(format)(js, expected)
   }
-
 
   it should "read order correctly" in rollbackWithModel {
     implicit session =>

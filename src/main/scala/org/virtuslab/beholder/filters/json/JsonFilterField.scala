@@ -22,20 +22,16 @@ trait MappedJsonFilterField[B] extends JsonFilterField {
   protected def valueFormat: Format[B]
 
   protected val rangeFormat: Format[FilterRange[B]] = {
-    val defaultFormat:Format[FilterRange[B]] = ((__ \ "from").formatNullable(valueFormat) and
+    val defaultFormat: Format[FilterRange[B]] = ((__ \ "from").formatNullable(valueFormat) and
       (__ \ "to").formatNullable(valueFormat))(FilterRange.apply, unlift(FilterRange.unapply))
 
-
-    new Format[FilterRange[B]]{
+    new Format[FilterRange[B]] {
       override def writes(o: FilterRange[B]): JsValue = defaultFormat.writes(o)
 
       override def reads(json: JsValue): JsResult[FilterRange[B]] =
         defaultFormat.reads(json).filterNot(JsError("Range cannot be empty!"))(_.isEmpty)
     }
   }
-
-
-
 
   protected val alternativeFormat: Format[FilterAlternative[B]] = {
     implicit def forValue = valueFormat
@@ -46,9 +42,8 @@ trait MappedJsonFilterField[B] extends JsonFilterField {
     Format(reads, writes)
   }
 
-
   def tryAlso(current: JsResult[Any], newOne: JsResult[Any]): JsResult[Any] = {
-    (current, newOne) match{
+    (current, newOne) match {
       case (error: JsError, error2: JsError) => error ++ error2
       case (error: JsError, succes: JsSuccess[Any]) => succes
       case _ => current
@@ -58,7 +53,7 @@ trait MappedJsonFilterField[B] extends JsonFilterField {
   override def readFilter(value: JsValue): JsResult[Any] =
     tryAlso(rangeFormat.reads(value), tryAlso(alternativeFormat.reads(value), valueFormat.reads(value)))
 
-  override def writeFilter(value: Any): JsValue = value match{
+  override def writeFilter(value: Any): JsValue = value match {
     case range: FilterRange[B] => rangeFormat.writes(range)
     case alternative: FilterAlternative[B] => alternativeFormat.writes(alternative)
     case value: B => valueFormat.writes(value)

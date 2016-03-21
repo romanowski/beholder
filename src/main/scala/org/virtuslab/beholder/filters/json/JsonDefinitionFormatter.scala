@@ -28,25 +28,25 @@ object JsonDefinitionFormatter {
   }
 
   private def orderFormat(filter: JsonFilter): Format[Order] = (
-    (__ \ "column").format[String](columnReads(filter))  and
-      nullableWithDefault((__ \ "asc").formatNullable[Boolean])(true)
-    )(Order.apply, unlift(Order.unapply))
+    (__ \ "column").format[String](columnReads(filter)) and
+    nullableWithDefault((__ \ "asc").formatNullable[Boolean])(true)
+  )(Order.apply, unlift(Order.unapply))
 
   def formatFor(filter: JsonFilter): Format[FilterDefinition] = {
     val forOrdering = mapped[Option[Order], Seq[Order]](
       (__ \ "ordering").formatNullable(orderFormat(filter))
     )(_.toSeq, _.headOption)
 
-    val forData =  nullableWithDefault((__ \ "data").formatNullable(new JsonConstrainsFormatter(filter)))(FilterConstrains())
+    val forData = nullableWithDefault((__ \ "data").formatNullable(new JsonConstrainsFormatter(filter)))(FilterConstrains())
 
     ((__ \ "take").formatNullable[Int] and
       (__ \ "skip").formatNullable[Int] and
       forOrdering and
-      forData) (FilterDefinition.apply, unlift(FilterDefinition.unapply))
+      forData)(FilterDefinition.apply, unlift(FilterDefinition.unapply))
   }
 }
 
-case class FieldDef(path: Array[String], data: JsValue){
+case class FieldDef(path: Array[String], data: JsValue) {
 
   def isNested = path.length > 1
 
@@ -60,7 +60,7 @@ case class JsonConstrainsFormatter(filter: JsonFilter) extends Format[FilterCons
   override def reads(json: JsValue): JsResult[FilterConstrains] =
     json match {
       case JsObject(fields) =>
-        createConstrains(fields.map{
+        createConstrains(fields.map {
           case (name, fieldJson) => FieldDef(name.split('.'), fieldJson)
         })
       case _ =>
@@ -70,16 +70,16 @@ case class JsonConstrainsFormatter(filter: JsonFilter) extends Format[FilterCons
   override def writes(o: FilterConstrains): JsValue = JsObject(jsonFields(o))
 
   private def jsonFields(filterConstrains: FilterConstrains): Seq[(String, JsValue)] = {
-    val fromNested = filterConstrains.nestedConstrains.flatMap{
-      case (nestedName, constrains) => jsonFields(constrains).map{
+    val fromNested = filterConstrains.nestedConstrains.flatMap {
+      case (nestedName, constrains) => jsonFields(constrains).map {
         case (fieldName, value) => s"$nestedName.$fieldName" -> value
       }
     }
-    val fromFields = filterConstrains.fieldConstrains.toSeq.map{
+    val fromFields = filterConstrains.fieldConstrains.toSeq.map {
       case (name, value) =>
         val filterField = filter.jsonField(name)
           .getOrElse(throw new IllegalArgumentException(s"Filter ${filter.name} hasn't got field: $name"))
-      name -> filterField.writeFilter(value)
+        name -> filterField.writeFilter(value)
     }
 
     fromFields ++ fromNested
@@ -109,14 +109,14 @@ case class JsonConstrainsFormatter(filter: JsonFilter) extends Format[FilterCons
   }
 
   private def appendNested(to: JsResult[FilterConstrains],
-                           fields: (String, Iterable[FieldDef])): JsResult[FilterConstrains] = {
+    fields: (String, Iterable[FieldDef])): JsResult[FilterConstrains] = {
     val (name, newFields) = fields
-    val nestedResult = for{
+    val nestedResult = for {
       nestedFilter <- filter.nestedFilterFor(name)
       formatter = JsonConstrainsFormatter(nestedFilter)
     } yield formatter.createConstrains(newFields.map(_.dropParent))
 
-    to.flatMap{ result =>
+    to.flatMap { result =>
       nestedResult.getOrElse(JsError(s"Missing nested filter for $name in filter ${filter.name}.")).map(result.addNested(name))
     }
 

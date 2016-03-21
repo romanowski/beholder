@@ -3,7 +3,7 @@ package org.virtuslab.beholder.views
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
 import scala.reflect.ClassTag
-import slick.lifted.{TupleShape, Rep, TableQuery, Tag}
+import slick.lifted.{ TupleShape, Rep, TableQuery, Tag }
 
 /**
  * Generated code for filterable views.

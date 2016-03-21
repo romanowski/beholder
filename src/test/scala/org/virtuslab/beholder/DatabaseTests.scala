@@ -4,7 +4,7 @@ import org.virtuslab.beholder.model._
 import org.virtuslab.beholder.view.UserMachinesView
 import slick.lifted.TableQuery
 
-class DatabaseTests extends AppTest with UserMachinesView  {
+class DatabaseTests extends AppTest with UserMachinesView {
   "tables" should "be populated" in rollbackWithModel {
     implicit session =>
 

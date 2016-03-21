@@ -27,8 +27,7 @@ case class MachineParameter(
   id: Option[MachineParameterId],
   name: String,
   value: String,
-  machine: MachineId
-) extends WithId[MachineParameterId]
+  machine: MachineId) extends WithId[MachineParameterId]
 
 /** Table definition for MachineParameters. */
 class MachineParameters(tag: Tag) extends IdTable[MachineParameterId, MachineParameter](tag, "MachineParameterS") {

@@ -24,10 +24,10 @@ case class FilterConstrains(
  * @param orderBy field by which ordering is done
  */
 case class FilterDefinition(
-  take: Option[Int],
-  skip: Option[Int],
-  orderBy: Seq[Order],
-  constrains: FilterConstrains){
+    take: Option[Int],
+    skip: Option[Int],
+    orderBy: Seq[Order],
+    constrains: FilterConstrains) {
 
   def withOrder(field: String, asc: Boolean = true) =
     copy(orderBy = Order(field, asc) +: orderBy)
@@ -37,7 +37,7 @@ object FilterDefinition {
   def empty = FilterDefinition(None, None, Nil, FilterConstrains(Map(), Map()))
 }
 
-case class FilterRange[T](from: Option[T], to: Option[T]){
+case class FilterRange[T](from: Option[T], to: Option[T]) {
   def isEmpty = from.isEmpty && to.isEmpty
 }
 

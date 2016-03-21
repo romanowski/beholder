@@ -32,10 +32,10 @@ class MappedFilterField[A: BaseTypedType: ClassTag] extends FilterField {
       case _ => LiteralColumn(Some(true))
     }
 
-  protected def filterOnAlternative(column: Rep[A], value: FilterAlternative[A]): Rep[Option[Boolean]] ={
+  protected def filterOnAlternative(column: Rep[A], value: FilterAlternative[A]): Rep[Option[Boolean]] = {
     val initial: Rep[Option[Boolean]] = LiteralColumn(Some(true))
-    value.options.foldLeft(initial){
-     _ || filterOnValue(column, _)
+    value.options.foldLeft(initial) {
+      _ || filterOnValue(column, _)
     }
   }
 
@@ -49,7 +49,6 @@ class MappedFilterField[A: BaseTypedType: ClassTag] extends FilterField {
 }
 
 class EnumField[T <: Enumeration](implicit tm: BaseTypedType[T#Value]) extends MappedFilterField[T#Value]
-
 
 class IgonredField[T: BaseTypedType] extends FilterField {
   override def doFilter(column: Rep[_])(value: Any): Rep[Option[Boolean]] = LiteralColumn(Some(true))
