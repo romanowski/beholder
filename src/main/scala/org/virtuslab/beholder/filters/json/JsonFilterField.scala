@@ -66,5 +66,5 @@ class IdentityJsonField[A: ClassTag: BaseTypedType: JsonTypedType] extends Mappe
 
   override protected def valueFormat: Format[A] = jsonTypeType.format
 
-  override def fieldTypeDefinition: JsValue = jsonTypeType.fieldJsonDefinition
+  override def fieldTypeDefinition: JsValue = jsonTypeType.fieldJsonDefinition //TODO - we must change this format!
 }

@@ -30,4 +30,7 @@ object LightDSLFilter extends DSLBase[FilterField, LightFilter, LightDslMapper] 
   override val inText = new MappedFilterField[String] {
     override protected def filterOnValue(column: Rep[String], data: String): Rep[Option[Boolean]] = column.? ilike s"%${escape(data)}%"
   }
+
+  override def inEnum[T <: Enumeration](implicit to: LightDslMapper[T#Value]): FilterField with MappedFilterField[T#Value] =
+    in[T#Value]
 }

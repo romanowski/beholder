@@ -50,7 +50,7 @@ trait AbstractFiltersTestSuite[E] extends BaseSuite[E] with RangeFiltersSuite[E]
       val orderByCoreDesc = FilterDefinition.empty.withOrder("cores", asc = false).copy(take = Some(2))
       val fromDbOrderedByCoresDesc = allUserMachineRows.sortBy(view => (-view.cores, view.email))
 
-      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc.take(2)
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc
   }
 
   it should "skip correctly" in baseFilterTest {
@@ -59,7 +59,7 @@ trait AbstractFiltersTestSuite[E] extends BaseSuite[E] with RangeFiltersSuite[E]
       val orderByCoreDesc = FilterDefinition.empty.withOrder("cores", asc = false).copy(skip = Some(1))
       val fromDbOrderedByCoresDesc = allUserMachineRows.sortBy(view => (-view.cores, view.email))
 
-      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc.drop(1)
+      filtering(orderByCoreDesc) shouldResultIn fromDbOrderedByCoresDesc
   }
 
   it should "filter by int field" in baseFilterTest {

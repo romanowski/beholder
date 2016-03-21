@@ -25,9 +25,15 @@ trait BaseSuite[E] extends UserMachinesView with BaseTest {
       def shouldResultIn(expected: Seq[UserMachineViewRow]): Unit = {
         val result = doFullFilter(BaseFilterData.this, fromFilter)
 
-        compare(result, expected)
+        val dropedAndSkiped = {
+          val dropped = expected.drop(fromFilter.skip.getOrElse(0))
+          fromFilter.take.map(dropped.take).getOrElse(dropped)
+        }
 
-        result.total shouldEqual allUserMachineRows.size
+        compare(result, dropedAndSkiped)
+
+        //TODO - test for that!
+         result.total shouldEqual expected.size
       }
     }
 

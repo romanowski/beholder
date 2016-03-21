@@ -18,27 +18,27 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
     create(tableFilterState)
 
   protected class TableBasedFilter[E, ET, T](state: FilterQueryState[E, ET, T]) extends LightFilter[E, ET, T] {
-    override protected def columnFor(q: T, name: String): Option[Rep[_]] = state.columns.get(name).map(_.apply(q))
+    override def columnFor(q: T, name: String): Option[Rep[_]] = state.columns.get(name).map(_.apply(q))
 
-    override protected def baseQuery: FilterQuery = state.baseQuery
+    override def baseQuery: FilterQuery = state.baseQuery
 
-    override protected def defaultOrder(q: T): Rep[_] = state.order(q)
+    override  def defaultOrder(q: T): Rep[_] = state.order(q)
 
-    override protected def fieldFor(name: String): Option[FilterField] = state.fields.get(name)
+    override  def fieldFor(name: String): Option[FilterField] = state.fields.get(name)
 
-    override protected def generateResults(fromDb: Seq[ET]): Seq[E] = state.mapper.apply(fromDb)
+    override  def generateResults(fromDb: Seq[ET]): Seq[E] = state.mapper.apply(fromDb)
   }
 
   protected class ViewBasedFilter[E, ET, T <: BaseView[ET]](state: ViewFilterState[E, ET, T]) extends LightFilter[E, ET, T] {
-    override protected def columnFor(q: T, name: String): Option[Rep[_]] = Option(q.columnByName(name))
+    override  def columnFor(q: T, name: String): Option[Rep[_]] = Option(q.columnByName(name))
 
-    override protected def baseQuery: FilterQuery = state.table
+    override def baseQuery: FilterQuery = state.table
 
-    override protected def defaultOrder(q: T): Rep[_] = q.id
+    override  def defaultOrder(q: T): Rep[_] = q.id
 
-    override protected def fieldFor(name: String): Option[FilterField] = state.fields.get(name)
+    override  def fieldFor(name: String): Option[FilterField] = state.fields.get(name)
 
-    override protected def generateResults(fromDb: Seq[ET]): Seq[E] = state.mapper.apply(fromDb)
+    override  def generateResults(fromDb: Seq[ET]): Seq[E] = state.mapper.apply(fromDb)
   }
 
   protected case class ViewFilterState[E, TE, T <: BaseView[TE]](table: Query[T, TE, Seq],
@@ -120,5 +120,5 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
 
   def inText: DSLField with MappedFilterField[String]
 
-  def inEnum[T <: Enumeration]: DSLField with MappedFilterField[T#Value] = ??? // TODO implement this!
+  def inEnum[T <: Enumeration](implicit to: FieldMapper[T#Value]): DSLField with MappedFilterField[T#Value]
 }

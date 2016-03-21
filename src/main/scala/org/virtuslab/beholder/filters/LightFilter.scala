@@ -19,20 +19,24 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
    * filter and sort all entities with given data
    */
   final override def filter(data: FilterDefinition)(implicit session: Session): Seq[E] =
-    takeAndSkip(data, createFilter(data))
+     takeAndSkip(data, createFilter(data))
 
-  override def filterWithTotalEntitiesNumber(data: FilterDefinition)(implicit session: Session): FilterResult[E] =
-    FilterResult(filter(data), baseQuery.length.run)
+
+  override def filterWithTotalEntitiesNumber(data: FilterDefinition)(implicit session: Session): FilterResult[E] = {
+    val filter = createFilter(data)
+
+    FilterResult(takeAndSkip(data, filter), filter.length.run)
+  }
 
   //################ Abstrat methods ##################
 
-  protected def fieldFor(name: String): Option[FilterField]
+  def fieldFor(name: String): Option[FilterField]
 
-  protected def baseQuery: FilterQuery
+  def baseQuery: FilterQuery
 
-  protected def defaultOrder(q: T): Rep[_]
+  def defaultOrder(q: T): Rep[_]
 
-  protected def columnFor(q: T, name: String): Option[Rep[_]]
+  def columnFor(q: T, name: String): Option[Rep[_]]
 
   protected def generateResults(fromDb: Seq[TE]): Seq[E]
 
@@ -95,7 +99,7 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
   private def createFilter(data: FilterDefinition): FilterQuery =
     filterOnQuery(data.constrains).sortBy(ordering(data))
 
-  private def takeAndSkip(data: FilterDefinition, filter: FilterQuery)(implicit session: Session): Seq[E] = {
+  protected def takeAndSkip(data: FilterDefinition, filter: FilterQuery)(implicit session: Session): Seq[E] = {
     val afterTake = data.take.fold(filter)(filter.take)
     val afterSkip = data.skip.fold(afterTake)(afterTake.drop)
 

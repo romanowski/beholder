@@ -5,7 +5,7 @@ import java.sql.Date
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
-import play.api.libs.json.{ Format, JsString, JsValue }
+import play.api.libs.json._
 import slick.ast.BaseTypedType
 
 import scala.reflect.ClassTag
@@ -44,6 +44,14 @@ object JsonDSL
   }
 
   override def inText: MappedFilterField[String] with JsonFilterField = in[String](stringJsonTypedField)
+
+  override def inEnum[T <: Enumeration](implicit to: JsonTypedType[T#Value]): FilterField with JsonFilterField with MappedFilterField[T#Value] =
+    in[T#Value]
+
+  def inEnum[T <: Enumeration](enum: T)(implicit to: BaseTypedType[T#Value],
+    formatter: Format[T#Value]): FilterField with JsonFilterField with MappedFilterField[T#Value] =
+    in[T#Value](forEnumeration(enum))
+
 }
 
 trait JsonTypedTypeImplicits {
@@ -52,4 +60,10 @@ trait JsonTypedTypeImplicits {
   implicit val bigDecimalJsonTypedField = JsonTypedType[BigDecimal]
   implicit val booleanJsonTypedField = JsonTypedType[Boolean]
   implicit val dateJsonTypedField = JsonTypedType[Date]
+
+  def forEnumeration[T <: Enumeration](enum: T)(implicit to: BaseTypedType[T#Value], formatter: Format[T#Value]): JsonTypedType[T#Value] =
+    JsonTypedType[T#Value](
+      JsArray(enum.values.toSeq.map(v => Json.toJson(v.asInstanceOf[T#Value])))
+    )
+
 }
