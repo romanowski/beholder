@@ -8,11 +8,8 @@ import org.virtuslab.beholder.view.UserMachineViewRow
 
 case class SystemPerUsers(system: String, users: Seq[UserId])
 
-trait AggregationTestSuite extends AbstractFiltersTestSuite[SystemPerUsers] {
+trait AggregationTestSuite extends AbstractFiltersTestSuite[Aggregated[UserMachineViewRow, MachineParameter]] {
   self: AppTest =>
-
-  def createUserMachinesFilter(data: BaseFilterData): FilterAPI[Aggregated[UserMachineViewRow, MachineParameter]]
-
 
     //TODO what with total entities number in aggregation case?
 
@@ -23,7 +20,16 @@ trait AggregationTestSuite extends AbstractFiltersTestSuite[SystemPerUsers] {
     }.toSeq
 
 
-  override protected def compare(result: FilterResult[SystemPerUsers], expected: Seq[UserMachineViewRow]): Unit =
-    result.content should contain theSameElementsAs aggregate(expected)
+  override protected def compare(result: FilterResult[Aggregated[UserMachineViewRow, MachineParameter]],
+                                 expected: Seq[UserMachineViewRow],
+                                 data: BaseFilterData): Unit = {
+    val aggregated = expected.map{
+      userMachine =>
+        Aggregated(userMachine, data.machineParameters.filter(_.machine == userMachine.machineId))
+    }
+
+    result.content should contain theSameElementsAs aggregated
+
+  }
 
 }

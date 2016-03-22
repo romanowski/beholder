@@ -1,6 +1,6 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.beholder.collectors.{DbCollector, Collector}
+import org.virtuslab.beholder.collectors.{Aggregated, OneToManyAggregator, DbCollector, Collector}
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
@@ -55,6 +55,19 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
       def as[A: FieldMapper](field: MappedFilterField[A] with DSLField): ViewFilterState[E, ET, T] =
         asUntyped(field)
     }
+
+    case class aggregate[A, TA](query: Query[TA, A, Seq]){
+      def on(joinFunc: (T, TA) => Rep[Boolean])
+            (implicit teShape: Shape[FlatShapeLevel, T, ET, T],
+             taShape: Shape[FlatShapeLevel, TA, A, TA]): ViewFilterState[Aggregated[ET, A], ET, T] = {
+        val aggregator = new OneToManyAggregator[ET, A, T, TA](query, joinFunc)
+        withCollector(aggregator)
+      }
+    }
+
+
+    def withCollector[NE](collector: Collector[NE, ET, T]): ViewFilterState[NE, ET, T] =
+      copy(collector = collector)
   }
 
   protected case class FilterQueryState[E, ET, T](
@@ -105,6 +118,15 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
 
     def mapped[NE](mapper: ET => NE): FilterQueryState[NE, ET, T] =
       copy(collector = new DbCollector(mapper))
+
+    case class aggregate[A, TA](query: Query[TA, A, Seq]){
+      def on(joinFunc: (T, TA) => Rep[Boolean])
+            (implicit teShape: Shape[FlatShapeLevel, T, ET, T],
+             taShape: Shape[FlatShapeLevel, TA, A, TA]): FilterQueryState[Aggregated[ET, A], ET, T] = {
+        val aggregator = new OneToManyAggregator[ET, A, T, TA](query, joinFunc)
+        withCollector(aggregator)
+      }
+    }
 
     def withCollector[NE](collector: Collector[NE, ET, T]): FilterQueryState[NE, ET, T] =
       copy(collector = collector)

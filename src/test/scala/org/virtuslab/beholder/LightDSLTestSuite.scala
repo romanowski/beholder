@@ -2,7 +2,7 @@ package org.virtuslab.beholder
 
 import java.sql.Date
 
-import org.virtuslab.beholder.collectors.{Aggregated, InMemoryAggregator}
+import org.virtuslab.beholder.collectors.{Aggregated, OneToManyAggregator}
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.model._
 import org.virtuslab.beholder.suites._
@@ -43,6 +43,7 @@ class LightDSLFiltersTests extends AppTest with FiltersTestSuite {
   }
 }
 
+
 class LightDSLQueryFiltersTests extends AppTest with FiltersTestSuite {
   def createUserMachinesFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
     import LightDSLFilter._
@@ -60,7 +61,8 @@ class LightDSLQueryFiltersTests extends AppTest with FiltersTestSuite {
             machine.cores,
             machine.created,
             machine.capacity,
-            user.id.get
+            user.id.get,
+            machine.id.get
           )
       }
   }
@@ -72,14 +74,15 @@ class LightDSLAggregationFiltersTests extends AppTest with AggregationTestSuite 
     import LightDSLFilter._
 
 
-    fromTable(userJoinMachinesQuery)(_._1.email) and
-      "email" as in[String] from (_._1.email) and
-      "system" as in[String] from (_._2.system) and
-      "cores" as in[Int] from (_._2.cores) and
-      "created" as in[Date] from (_._2.created) and
-      "capacity" as in[BigDecimal] fromOpt (_._2.capacity) collector {
-        new InMemoryAggregator(TableQuery[MachineParameters])(_.c ==)
-    }
+    val filter = fromView(data.view) and
+      "email" as in[String] and
+      "system" as in[String] and
+      "cores" as in[Int] and
+      "created" as in[Date] and
+      "capacity" as in[BigDecimal]
 
+    filter.aggregate(TableQuery[MachineParameters]).on{
+      case (view, param) => view.c7 === param.machine
+    }
   }
 }

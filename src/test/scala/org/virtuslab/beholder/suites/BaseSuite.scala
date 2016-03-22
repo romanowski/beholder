@@ -15,7 +15,7 @@ trait BaseSuite[E] extends UserMachinesView with BaseTest {
       testImplementation(new BaseFilterData())
   }
 
-  protected def compare(result: FilterResult[E], expected: Seq[UserMachineViewRow]): Unit =
+  protected def compare(result: FilterResult[E], expected: Seq[UserMachineViewRow], data: BaseFilterData): Unit =
     result.content should contain theSameElementsAs expected
 
 
@@ -30,7 +30,7 @@ trait BaseSuite[E] extends UserMachinesView with BaseTest {
           fromFilter.take.map(dropped.take).getOrElse(dropped)
         }
 
-        compare(result, dropedAndSkiped)
+        compare(result, dropedAndSkiped, BaseFilterData.this)
 
         //TODO - test for that!
          result.total shouldEqual expected.size
