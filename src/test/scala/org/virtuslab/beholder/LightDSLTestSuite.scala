@@ -2,6 +2,7 @@ package org.virtuslab.beholder
 
 import java.sql.Date
 
+import org.virtuslab.beholder.collectors.{Aggregated, InMemoryAggregator}
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.model._
 import org.virtuslab.beholder.suites._
@@ -64,10 +65,10 @@ class LightDSLQueryFiltersTests extends AppTest with FiltersTestSuite {
       }
   }
 }
-/*
+
 
 class LightDSLAggregationFiltersTests extends AppTest with AggregationTestSuite {
-  override def createUserMachinesFilter(data: BaseFilterData): FilterAPI[SystemPerUsers] = {
+  override def createUserMachinesFilter(data: BaseFilterData): FilterAPI[Aggregated[UserMachineViewRow, MachineParameter]] = {
     import LightDSLFilter._
 
 
@@ -76,13 +77,9 @@ class LightDSLAggregationFiltersTests extends AppTest with AggregationTestSuite 
       "system" as in[String] from (_._2.system) and
       "cores" as in[Int] from (_._2.cores) and
       "created" as in[Date] from (_._2.created) and
-      "capacity" as in[BigDecimal] fromOpt (_._2.capacity) aggregated {
-        res =>
-          res.groupBy(_._2.system).map{
-            case (system, elems) =>
-              SystemPerUsers(system, elems.flatMap(_._1.id))
-          }.toSeq
+      "capacity" as in[BigDecimal] fromOpt (_._2.capacity) collector {
+        new InMemoryAggregator(TableQuery[MachineParameters])(_.c ==)
     }
 
   }
-}*/
+}

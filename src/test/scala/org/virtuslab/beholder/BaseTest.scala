@@ -74,12 +74,36 @@ trait ModelIncluded extends AppTest {
 
     TestInvoker.invokeAction(userMachineQuery ++= userMachines)
 
-    val machineParameters = Seq(
+    val machine1Parameters = Map(
+      "displayCount" -> "2",
+      "cdDriveSpeed" -> "x52",
+      "color" -> "red"
+    )
+
+    val machine2Parameters = Map(
+      "displayCount" -> "2",
+      "cdDriveSpeed" -> "x52",
+      "color" -> "red"
+    )
+
+    val machineParameters = Seq(machine1.id.get -> machine1Parameters, machine1.id.get -> machine2Parameters).flatMap{
+      case (machineId, values) =>
+        values.map {
+          case (name, value) =>
+            val mp = MachineParameter(None, name, value, machineId)
+            val id = machineParameterRepository.save(mp)
+            mp.copy(id = Option(id))
+        }
+    }
+
+ /*   val machineParameters = Seq(
       MachineParameter(None, "displaysCount", "2", machine1.id.get),
       MachineParameter(None, "displaysCount", "1", machine2.id.get),
+      MachineParameter(None, "cdDriveSpeed", "x52", machine1.id.get),
       MachineParameter(None, "cdDriveSpeed", "x52", machine1.id.get)
-    ).map(mp => mp.copy(id = Some(machineParameterRepository.save(mp))))
 
+    ).map(mp => mp.copy(id = Some(machineParameterRepository.save(mp))))
+*/
     val teams = Seq(Team(None, user1.id.get, "core", "Ubuntu"))
       .map(t => t.copy(id = Some(TeamsRepository.save(t))))
 

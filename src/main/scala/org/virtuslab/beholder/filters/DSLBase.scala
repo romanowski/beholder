@@ -106,6 +106,9 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
     def mapped[NE](mapper: ET => NE): FilterQueryState[NE, ET, T] =
       copy(collector = new DbCollector(mapper))
 
+    def withCollector[NE](collector: Collector[NE, ET, T]): FilterQueryState[NE, ET, T] =
+      copy(collector = collector)
+
   }
 
   def fromTable[E, T](filter: Query[T, E, Seq])(order: T => Rep[_]) =

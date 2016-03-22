@@ -2,9 +2,9 @@ package org.virtuslab.beholder.view
 
 import java.sql.Date
 
-import org.virtuslab.beholder.model.{ Machines, UserId, Users }
+import org.virtuslab.beholder.model.{MachineId, Machines, UserId, Users}
 import org.virtuslab.beholder.views.FilterableViews
-import org.virtuslab.beholder.{ AppTest, ModelIncluded, TestInvoker }
+import org.virtuslab.beholder.{AppTest, ModelIncluded, TestInvoker}
 import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
@@ -14,7 +14,8 @@ case class UserMachineViewRow(
   cores: Int,
   created: Date,
   capacity: Option[BigDecimal],
-  userId: UserId)
+  userId: UserId,
+  machineId: MachineId)
 
 trait UserMachinesView extends ModelIncluded {
 
@@ -40,7 +41,9 @@ trait UserMachinesView extends ModelIncluded {
               "cores" -> machine.cores,
               "created" -> machine.created,
               "capacity" -> machine.capacity,
-              "userId" -> user.id)
+              "userId" -> user.id,
+              "machineId" -> machine.id
+              )
         }
 
       TestInvoker.invokeAction(tableQuery.viewDDL.create)

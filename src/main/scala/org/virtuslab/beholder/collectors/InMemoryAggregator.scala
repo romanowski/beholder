@@ -9,11 +9,9 @@ case class Aggregated[E, A](from: E, data: Seq[A])
 
 
 
-class InMemoryAggregator[E, A, T, TA](fromFilter: LightFilter[E, E, T],
-                                      withFilter: LightFilter[A, A, TA],
+class InMemoryAggregator[E, A, T, TA <: Table[A]](fromTable: TableQuery[TA])(
                                       joinConstrains: (T, TA) => Rep[Boolean])(
-                                       implicit val teShape: Shape[FlatShapeLevel, T, E, T],
-                                       implicit val taShape: Shape[FlatShapeLevel, TA, A, TA]
+                                       implicit val teShape: Shape[FlatShapeLevel, T, E, T]
                                      ) extends Collector[Aggregated[E, A], E, T] {
 
 
@@ -24,7 +22,7 @@ class InMemoryAggregator[E, A, T, TA](fromFilter: LightFilter[E, E, T],
     }(collection.breakOut)
 
   override def collect(data: FilterDefinition, query: Query[T, E, Seq])(implicit session: Session): Seq[Aggregated[E, A]] = {
-    val joinedQuery = query joinLeft withFilter.baseQuery on joinConstrains
+    val joinedQuery = query joinLeft fromTable on joinConstrains
     val all = aggregate(joinedQuery.list)
 
     val skipped = all.drop(data.skip.getOrElse(0))
