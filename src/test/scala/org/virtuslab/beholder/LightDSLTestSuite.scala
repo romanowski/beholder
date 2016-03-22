@@ -64,6 +64,7 @@ class LightDSLQueryFiltersTests extends AppTest with FiltersTestSuite {
       }
   }
 }
+/*
 
 class LightDSLAggregationFiltersTests extends AppTest with AggregationTestSuite {
   override def createUserMachinesFilter(data: BaseFilterData): FilterAPI[SystemPerUsers] = {
@@ -84,4 +85,4 @@ class LightDSLAggregationFiltersTests extends AppTest with AggregationTestSuite 
     }
 
   }
-}
+}*/

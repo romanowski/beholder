@@ -1,5 +1,6 @@
 package org.virtuslab.beholder.filters
 
+import org.virtuslab.beholder.collectors.{DbCollector, Collector}
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
@@ -26,7 +27,7 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
 
     override  def fieldFor(name: String): Option[FilterField] = state.fields.get(name)
 
-    override  def generateResults(fromDb: Seq[ET]): Seq[E] = state.mapper.apply(fromDb)
+    override def collector: Collector[E, ET, T] = state.collector
   }
 
   protected class ViewBasedFilter[E, ET, T <: BaseView[ET]](state: ViewFilterState[E, ET, T]) extends LightFilter[E, ET, T] {
@@ -38,20 +39,20 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
 
     override  def fieldFor(name: String): Option[FilterField] = state.fields.get(name)
 
-    override  def generateResults(fromDb: Seq[ET]): Seq[E] = state.mapper.apply(fromDb)
+    override def collector: Collector[E, ET, T] = state.collector
   }
 
-  protected case class ViewFilterState[E, TE, T <: BaseView[TE]](table: Query[T, TE, Seq],
+  protected case class ViewFilterState[E, ET, T <: BaseView[ET]](table: Query[T, ET, Seq],
       fields: Map[String, DSLField],
-      mapper: Seq[TE] => Seq[E]) {
+      val collector: Collector[E, ET, T]) {
 
     def and(name: String): AndDSL = new AndDSL(name)
 
     class AndDSL(name: String) {
-      def asUntyped(field: DSLField): ViewFilterState[E, TE, T] =
+      def asUntyped(field: DSLField): ViewFilterState[E, ET, T] =
         ViewFilterState.this.copy(fields = fields + (name -> field))
 
-      def as[A: FieldMapper](field: MappedFilterField[A] with DSLField): ViewFilterState[E, TE, T] =
+      def as[A: FieldMapper](field: MappedFilterField[A] with DSLField): ViewFilterState[E, ET, T] =
         asUntyped(field)
     }
   }
@@ -61,7 +62,7 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
       val fields: Map[String, DSLField],
       val columns: Map[String, T => Rep[_]],
       val order: T => Rep[_],
-      val mapper: Seq[ET] => Seq[E]) {
+      val collector: Collector[E, ET, T]) {
 
     def and(name: String): AndDSL = new AndDSL(name)
 
@@ -103,18 +104,15 @@ abstract class DSLBase[DSLField <: FilterField, FilterType[E, ET, T] <: LightFil
       copy(order = newOrder)
 
     def mapped[NE](mapper: ET => NE): FilterQueryState[NE, ET, T] =
-      copy(mapper = result => result.map(mapper))
-
-    def aggregated[NE](mapper: Seq[ET] => Seq[NE]): FilterQueryState[NE, ET, T] =
-      copy(mapper = mapper)
+      copy(collector = new DbCollector(mapper))
 
   }
 
   def fromTable[E, T](filter: Query[T, E, Seq])(order: T => Rep[_]) =
-    new FilterQueryState[E, E, T](filter, Map(), Map(), order, identity)
+    new FilterQueryState[E, E, T](filter, Map(), Map(), order, new DbCollector(identity))
 
   def fromView[E, T <: BaseView[E]](table: Query[T, E, Seq]): ViewFilterState[E, E, T] =
-    new ViewFilterState(table, Map.empty, identity)
+    new ViewFilterState(table, Map.empty, new DbCollector(identity))
 
   def in[T: FieldMapper]: DSLField with MappedFilterField[T]
 

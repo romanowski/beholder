@@ -1,5 +1,6 @@
 package org.virtuslab.beholder.filters
 
+import org.virtuslab.beholder.collectors.Collector
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
@@ -19,14 +20,12 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
    * filter and sort all entities with given data
    */
   final override def filter(data: FilterDefinition)(implicit session: Session): Seq[E] =
-     takeAndSkip(data, createFilter(data))
+    collector.collect(data, createFilter(data))
 
 
-  override def filterWithTotalEntitiesNumber(data: FilterDefinition)(implicit session: Session): FilterResult[E] = {
-    val filter = createFilter(data)
+  override def filterWithTotalEntitiesNumber(data: FilterDefinition)(implicit session: Session): FilterResult[E] =
+    collector.collectAndCount(data, createFilter(data))
 
-    FilterResult(takeAndSkip(data, filter), filter.length.run)
-  }
 
   //################ Abstrat methods ##################
 
@@ -38,7 +37,7 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
 
   def columnFor(q: T, name: String): Option[Rep[_]]
 
-  protected def generateResults(fromDb: Seq[TE]): Seq[E]
+  def collector: Collector[E, TE, T]
 
   //################ Extension methods ##################
 
@@ -98,11 +97,4 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
 
   private def createFilter(data: FilterDefinition): FilterQuery =
     filterOnQuery(data.constrains).sortBy(ordering(data))
-
-  protected def takeAndSkip(data: FilterDefinition, filter: FilterQuery)(implicit session: Session): Seq[E] = {
-    val afterTake = data.take.fold(filter)(filter.take)
-    val afterSkip = data.skip.fold(afterTake)(afterTake.drop)
-
-    generateResults(afterSkip.list)
-  }
 }
