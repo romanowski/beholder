@@ -7,28 +7,28 @@ import org.virtuslab.beholder.view.UserMachineViewRow
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-trait JoinSuite extends FiltersTestSuite {
+trait JoinSuite extends FiltersTestSuite with DefaultCollectorTest {
 
   //TODO add 3 nested deep TODO negative tests
   //TODO test range and alternatives
 
-  def createTeamFilter(data: BaseFilterData): LightFilter[Team, Team, Teams]
+  def createTeamFilter(data: BaseFilterData): LightFilter[Team, Teams]
 
-  def createUserMachineFilter(data: BaseFilterData): LightFilter[UserMachineViewRow, UserMachineViewRow, _ <: BaseView[UserMachineViewRow]]
+  def createBaseFilter(data: BaseFilterData): LightFilter[UserMachineViewRow, _ <: BaseView[UserMachineViewRow]]
 
 
   private val adminJoinName = "admin"
 
 
-  override def createUserMachinesFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
-    val userMachineFilter = createUserMachineFilter(data)
+  override def createFilter(data: BaseFilterData) = {
+    val userMachineFilter = createBaseFilter(data)
     val teamFilter = createTeamFilter(data)
 
     userMachineFilter.join(adminJoinName, teamFilter)(
       (um, t) => t.admin === um.typedColumnByName[UserId]("userId")
     )
   }
-
+/*
 
   it should "perform simple join" in baseFilterTest {
     data =>
@@ -76,6 +76,6 @@ trait JoinSuite extends FiltersTestSuite {
       intercept[IllegalArgumentException] {
         doFilter(data, filterDefinition)
       }
-  }
+  }*/
 
 }

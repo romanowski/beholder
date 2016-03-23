@@ -27,14 +27,14 @@ object JsonDSL
     extends DSLBase[FilterField with JsonFilterField, JsonFilterImpl, JsonTypedType]
     with JsonTypedTypeImplicits {
 
-  override def create[E, TE, T](viewFilterState: JsonDSL.FilterQueryState[E, TE, T]): JsonFilterImpl[E, TE, T] =
-    new TableBasedFilter(viewFilterState) with JsonFilterImpl[E, TE, T] {
-      override protected def fields: Map[String, JsonFilterField] = viewFilterState.fields
+  override def create[E, T](viewFilterState: JsonDSL.FilterQueryState[E, T]): JsonFilterImpl[E, T] =
+    new TableBasedFilter(viewFilterState) with JsonFilterImpl[E, T] {
+      override protected def jsonFields: Map[String, JsonFilterField] = viewFilterState.fields
     }
 
-  override def create[E, TE, T <: BaseView[TE]](viewFilterState: JsonDSL.ViewFilterState[E, TE, T]): JsonFilterImpl[E, TE, T] =
-    new ViewBasedFilter[E, TE, T](viewFilterState) with JsonFilterImpl[E, TE, T] {
-      override protected def fields: Map[String, JsonFilterField] = viewFilterState.fields
+  override def create[E, T <: BaseView[E]](viewFilterState: JsonDSL.ViewFilterState[E, T]): JsonFilterImpl[E, T] =
+    new ViewBasedFilter[E, T](viewFilterState) with JsonFilterImpl[E, T] {
+      override protected def jsonFields: Map[String, JsonFilterField] = viewFilterState.fields
     }
 
   override def in[T: JsonTypedType]: MappedFilterField[T] with JsonFilterField = {

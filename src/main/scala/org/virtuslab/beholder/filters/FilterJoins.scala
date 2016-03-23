@@ -2,8 +2,8 @@ package org.virtuslab.beholder.filters
 
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-trait FilterJoins[E, TE, T] {
-  self: LightFilter[E, TE, T] =>
+trait FilterJoins[E, T] {
+  self: LightFilter[E, T] =>
 
   type FilterJoin = FilterConstrains => FilterQuery => FilterQuery
 
@@ -13,7 +13,7 @@ trait FilterJoins[E, TE, T] {
 
   //TODO - dsl for joins
   def join[NET, NT](name: String,
-    from: LightFilter[_, NET, NT])(on: (T, NT) => Rep[Boolean])(implicit t1Shape: Shape[FlatShapeLevel, T, TE, T]): LightFilter[E, TE, T] = {
+    from: LightFilter[NET, NT])(on: (T, NT) => Rep[Boolean])(implicit t1Shape: Shape[FlatShapeLevel, T, E, T]): LightFilter[E, T] = {
     val join: FilterJoin = data => query =>
       for {
         ft <- query

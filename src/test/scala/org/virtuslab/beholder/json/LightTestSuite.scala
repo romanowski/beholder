@@ -14,23 +14,21 @@ class JsonDSLJoinFiltersTests extends AppTest with JoinSuite {
   import JsonDSL._
 
   override def createTeamFilter(data: BaseFilterData) =
-    create {
       fromTable(TableQuery[Teams])(_.teamName) and
         "teamName" from (_.teamName) and
         "system" from (_.system) //TODO in Range
-    }
 
-  override def createUserMachineFilter(data: BaseFilterData) =
-    fromView(data.view) and
-      "email" as in[String] and
-      "system" as in[String] and
-      "cores" as in[Int] and
-      "created" as in[Date] and
-      "capacity" as in[BigDecimal]
+  override def createBaseFilter(data: BaseFilterData) =
+      fromView(data.view) and
+        "email" as in[String] and
+        "system" as in[String] and
+        "cores" as in[Int] and
+        "created" as in[Date] and
+        "capacity" as in[BigDecimal]
 }
 
-class JsonFiltersTests extends AppTest with FiltersTestSuite {
-  def createUserMachinesFilter(data: BaseFilterData): FilterAPI[UserMachineViewRow] = {
+class JsonFiltersTests extends AppTest with FiltersTestSuite with DefaultCollectorTest  {
+  def createFilter(data: BaseFilterData) = {
     import JsonDSL._
 
     fromView(data.view) and

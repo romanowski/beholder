@@ -6,9 +6,7 @@ import org.joda.time.DateTime
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.view.UserMachineViewRow
 
-trait FiltersTestSuite extends AbstractFiltersTestSuite[UserMachineViewRow]
-
-trait AbstractFiltersTestSuite[E] extends BaseSuite[E] with RangeFiltersSuite[E] {
+trait FiltersTestSuite extends BaseSuite with RangeFiltersSuite {
 
   // TODO add enums
   // TODO add negative tests

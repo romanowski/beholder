@@ -4,7 +4,7 @@ import org.virtuslab.beholder.AppTest
 import org.virtuslab.beholder.filters.FilterRange
 import org.virtuslab.beholder.view.UserMachineViewRow
 
-trait RangeFiltersSuite[E] extends BaseSuite[E] {
+trait RangeFiltersSuite extends BaseSuite {
 
   it should "should take int range correctly" in baseFilterTest {
     data =>

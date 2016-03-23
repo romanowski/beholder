@@ -4,7 +4,7 @@ import org.virtuslab.beholder.filters.FilterDefinition
 import play.api.mvc._
 import play.api.libs.json._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api.Session
-
+/*
 abstract class FilterController[Entity: Writes](filter: JsonAwareFilter[Entity]) extends Controller {
 
   //TODO - move json to different project and best controller also
@@ -29,7 +29,7 @@ abstract class FilterController[Entity: Writes](filter: JsonAwareFilter[Entity])
             data = filter.filterWithTotalEntitiesNumber(mapFilterData(filterDefinition))
           } yield ResultWritter.formatResults(filter)(data, filterDefinition)
     }
-} //TODO Contexted filters
+} *///TODO Contexted filters
 /*
 
 abstract class ContextFilterController[Context, Entity <: Product](contextedFilter: ContextedFilterAPI[Context, Entity, JsonFormatter[Entity]])

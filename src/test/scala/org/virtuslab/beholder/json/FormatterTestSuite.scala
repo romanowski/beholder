@@ -1,14 +1,14 @@
 package org.virtuslab.beholder.json
 
 import java.sql.Date
+
 import org.joda.time.DateTime
+import org.virtuslab.beholder.consumers.json.JsonDefinitionFormatter
 import org.virtuslab.beholder.view.UserMachinesView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
-
-import org.virtuslab.beholder.{ ModelIncluded, AppTest }
+import org.virtuslab.beholder.{AppTest, ModelIncluded}
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.filters.json._
-
 import play.api.libs.json._
 
 class FormatterTestSuite extends AppTest with UserMachinesView with ModelIncluded {

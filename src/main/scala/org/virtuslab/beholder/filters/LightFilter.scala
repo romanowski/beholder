@@ -1,47 +1,37 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.beholder.collectors.Collector
-import org.virtuslab.beholder.views.BaseView
-import org.virtuslab.unicorn.LongUnicornPlay._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-import collection.immutable.Iterable
+
 import slick.lifted.ColumnOrdered
-import slick.lifted.Ordered
+import slick.lifted.{Ordered, Query}
 import slick.ast.Ordering
 
 import scala.util.Try
 
-trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
+trait LightFilter[E, T] extends BeholderFilter[E, T] with FilterJoins[E, T] {
 
   //################ Public API #####################
 
-  /**
-   * filter and sort all entities with given data
-   */
-  final override def filter(data: FilterDefinition)(implicit session: Session): Seq[E] =
-    collector.collect(data, createFilter(data))
 
+  override def apply(definition: FilterDefinition): Query[T, E, Seq] = {
+    val all = allMatching(definition)
 
-  override def filterWithTotalEntitiesNumber(data: FilterDefinition)(implicit session: Session): FilterResult[E] =
-    collector.collectAndCount(data, createFilter(data))
+    val afterSkip = definition.skip.fold(all)(all.drop)
+    definition.take.fold(afterSkip)(afterSkip.take)
+  }
+
+  override def allMatching(definition: FilterDefinition): Query[T, E, Seq] =
+    filterOnQuery(definition.constrains).sortBy(ordering(definition))
 
 
   //################ Abstrat methods ##################
 
-  def fieldFor(name: String): Option[FilterField]
+
 
   def baseQuery: FilterQuery
 
-  def defaultOrder(q: T): Rep[_]
-
-  def columnFor(q: T, name: String): Option[Rep[_]]
-
-  def collector: Collector[E, TE, T]
-
   //################ Extension methods ##################
-
-  protected def initialConstrains: Rep[Option[Boolean]] = LiteralColumn(Some(true)) //TODO include in dsl
 
   protected def noSuchColumn(name: String): Rep[_] =
     throw new IllegalArgumentException(s"Filter does not contain clumn $name") // TODO use specific exception
@@ -54,26 +44,38 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
 
   //################ Internals ################
 
-  private[filters] def filterOnQuery(data: FilterConstrains): FilterQuery =
-    performJoins(baseQuery, data).filter(filters(data.fieldConstrains))
+  type FilterQuery = Query[T, E, Seq]
 
-  private[filters]type FilterQuery = Query[T, TE, Seq]
 
-  private def getField(name: String) = fieldFor(name).getOrElse(noSuchField(name))
+  private[filters] def filterOnQuery(data: FilterConstrains): FilterQuery = {
+    val joined = performJoins(baseQuery, data)
 
-  private def getColumn(q: T, name: String) = columnFor(q, name).getOrElse(noSuchColumn(name))
+    if(data.fieldConstrains.isEmpty)
+      joined
+    else
+      joined.filter(columnConstraints(data.fieldConstrains))
+  }
 
-  protected def columnsFilters(liftedEntity: T, data: Map[String, Any]): Iterable[Rep[Option[Boolean]]] =
-    data.map {
+
+
+  protected def columnConstraints(data: Map[String, Any])(liftedEntity: T): Rep[Option[Boolean]]= {
+    val columns = filterColumns(liftedEntity)
+    val fields = filterFields
+
+    val fieldsReps = data.map {
       case (name, value) =>
-        getField(name).doFilter(getColumn(liftedEntity, name))(value)
+        val field = fields.getOrElse(name, noSuchField(name))
+        val column = columns.getOrElse(name, noSuchColumn(name))
+
+        field.doFilter(column)(value)
     }
 
-  /**
-   * applies filter data into query where clauses
-   */
-  protected def filters(data: Map[String, Any])(liftedEntity: T): Rep[Option[Boolean]] =
-    columnsFilters(liftedEntity, data).foldLeft(initialConstrains)(_ && _)
+    fieldsReps.toSeq match{
+      case Seq(rep) => rep
+      case rep +: tail => tail.foldLeft(rep)(_ && _)
+    }
+
+  }
 
   def performJoins(t: FilterQuery, filterDefinition: FilterConstrains): FilterQuery =
     filterDefinition.nestedConstrains.foldLeft(t) {
@@ -85,16 +87,15 @@ trait LightFilter[E, TE, T] extends FilterAPI[E] with FilterJoins[E, TE, T] {
   private def ordering(data: FilterDefinition)(liftedEntity: T): Ordered = {
     def ordered(c: Rep[_]) = ColumnOrdered(c, Ordering())
 
+    val columns = filterColumns(liftedEntity)
+
     val fromFilter = data.orderBy.flatMap {
       case Order(name, asc) =>
-        val column = ordered(getColumn(liftedEntity, name))
+        val column = ordered(columns.getOrElse(name, noSuchColumn(name)))
 
         (if (asc) column.asc else column.desc).columns
     }
 
     new Ordered(fromFilter ++ ordered(defaultOrder(liftedEntity)).asc.columns)
   }
-
-  private def createFilter(data: FilterDefinition): FilterQuery =
-    filterOnQuery(data.constrains).sortBy(ordering(data))
 }

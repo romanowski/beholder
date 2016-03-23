@@ -1,4 +1,4 @@
-package org.virtuslab.beholder.filters.json
+package org.virtuslab.beholder.consumers.json
 
 //TODO move all keys here TODO use in tests
 object JsonKeys {
