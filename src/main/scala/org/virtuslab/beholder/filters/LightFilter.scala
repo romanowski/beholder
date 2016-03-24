@@ -1,28 +1,22 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
+import org.virtuslab.beholder.context.Contexted
+import slick.driver.JdbcDriver
 
 
 import slick.lifted.ColumnOrdered
-import slick.lifted.{Ordered, Query}
+import slick.lifted._
 import slick.ast.Ordering
 
-import scala.util.Try
 
 trait LightFilter[E, T] extends BeholderFilter[E, T] with FilterJoins[E, T] {
 
   //################ Public API #####################
 
 
-  override def apply(definition: FilterDefinition): Query[T, E, Seq] = {
-    val all = allMatching(definition)
-
-    val afterSkip = definition.skip.fold(all)(all.drop)
-    definition.take.fold(afterSkip)(afterSkip.take)
+  override def apply(definition: Contexted[FilterDefinition]): Query[T, E, Seq] = {
+    filterOnQuery(definition.input.constrains, definition.driver).sortBy(ordering(definition.input))
   }
-
-  override def allMatching(definition: FilterDefinition): Query[T, E, Seq] =
-    filterOnQuery(definition.constrains).sortBy(ordering(definition))
 
 
   //################ Abstrat methods ##################
@@ -47,20 +41,22 @@ trait LightFilter[E, T] extends BeholderFilter[E, T] with FilterJoins[E, T] {
   type FilterQuery = Query[T, E, Seq]
 
 
-  private[filters] def filterOnQuery(data: FilterConstrains): FilterQuery = {
-    val joined = performJoins(baseQuery, data)
+  private[filters] def filterOnQuery(constrains: FilterConstrains, driver: JdbcDriver): FilterQuery = {
+    val joined = performJoins(baseQuery, constrains, driver)
 
-    if(data.fieldConstrains.isEmpty)
+    if(constrains.fieldConstrains.isEmpty)
       joined
     else
-      joined.filter(columnConstraints(data.fieldConstrains))
+      joined.filter(columnConstraints(constrains.fieldConstrains, driver))
   }
 
 
 
-  protected def columnConstraints(data: Map[String, Any])(liftedEntity: T): Rep[Option[Boolean]]= {
+  protected def columnConstraints(data: Map[String, Any], driver: JdbcDriver)(liftedEntity: T): Rep[Option[Boolean]]= {
     val columns = filterColumns(liftedEntity)
     val fields = filterFields
+
+    import driver.api._
 
     val fieldsReps = data.map {
       case (name, value) =>
@@ -77,10 +73,10 @@ trait LightFilter[E, T] extends BeholderFilter[E, T] with FilterJoins[E, T] {
 
   }
 
-  def performJoins(t: FilterQuery, filterDefinition: FilterConstrains): FilterQuery =
-    filterDefinition.nestedConstrains.foldLeft(t) {
+  def performJoins(t: FilterQuery, constrains: FilterConstrains, driver: JdbcDriver): FilterQuery =
+    constrains.nestedConstrains.foldLeft(t) {
       case (q, (name, data)) =>
-        joins.get(name).map(_.apply(data)(q))
+        joins.get(name).map(_.apply(data, driver)(q))
           .getOrElse(missingJoin(name))
     }
 

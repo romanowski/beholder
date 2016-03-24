@@ -1,6 +1,6 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.beholder.collectors.{DbCollector, Collector}
+//import org.virtuslab.beholder.collectors.{DbCollector, Collector}
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 

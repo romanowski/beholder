@@ -1,10 +1,10 @@
 package org.virtuslab.beholder.suites
 
-import org.virtuslab.beholder.AppTest
+/*import org.virtuslab.beholder.AppTest
 import org.virtuslab.beholder.collectors.Aggregated
 import org.virtuslab.beholder.filters._
 import org.virtuslab.beholder.model.{MachineParameter, UserId}
-import org.virtuslab.beholder.view.UserMachineViewRow
+import org.virtuslab.beholder.view.UserMachineViewRow*/
 
 //TODO
 trait AggregationTestSuite /*extends AbstractFiltersTestSuite[SystemPerUsers] {

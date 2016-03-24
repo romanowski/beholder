@@ -42,7 +42,7 @@ class LightDSLFiltersTests extends AppTest with FiltersTestSuite with DefaultCol
       "capacity" as in[BigDecimal]
   }
 }
-
+/*
 
 class LightDSLQueryFiltersTests extends AppTest with FiltersTestSuite with MappedCollectorTest[(User, Machine)]  {
   def createFilter(data: BaseFilterData) = {
@@ -73,7 +73,7 @@ class LightDSLQueryFiltersTests extends AppTest with FiltersTestSuite with Mappe
   override def compare(data: BaseFilterData, fromFilter: Seq[(User, Machine)], expected: Seq[UserMachineViewRow]): Unit = {
     fromFilter.map(toMachineViewRow) should contain theSameElementsAs expected
   }
-}
+}*/
 /*
 class LightDSLAggregationFiltersTests extends AppTest with AggregationTestSuite {
   override def createUserMachinesFilter(data: BaseFilterData): FilterAPI[Aggregated[UserMachineViewRow, MachineParameter]] = {

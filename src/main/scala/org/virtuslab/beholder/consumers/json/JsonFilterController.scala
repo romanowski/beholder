@@ -6,7 +6,7 @@ import play.api.mvc._
 class JsonFilterController extends Controller {
 
 
-  final def doFilter(): EssentialAction =
-
+  /*final def doFilter(): EssentialAction =
+*/
 
 }

@@ -27,7 +27,7 @@ case class FilterDefinition(
     take: Option[Int],
     skip: Option[Int],
     orderBy: Seq[Order],
-    constrains: FilterConstrains) {
+    constrains: FilterConstrains) extends SimplePagination{
 
   def withOrder(field: String, asc: Boolean = true) =
     copy(orderBy = Order(field, asc) +: orderBy)
@@ -42,6 +42,11 @@ case class FilterRange[T](from: Option[T], to: Option[T]) {
 }
 
 case class FilterAlternative[T](options: Seq[T])
+
+trait SimplePagination{
+  def take: Option[Int]
+  def skip: Option[Int]
+}
 
 case class FilterResult[T](content: Seq[T], total: Int) {
 

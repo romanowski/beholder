@@ -3,6 +3,7 @@ package org.virtuslab.beholder.collectors
 import org.virtuslab.beholder.filters._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 import org.virtuslab.unicorn.LongUnicornPlay._
+/*
 
 
 case class Aggregated[E, A](from: E, data: Seq[A])
@@ -28,7 +29,7 @@ class OneToManyAggregator[E, A, T, TA](fromTable: Query[TA, A, Seq],
         }.reverse
     }
   }
-  
+
   override def collect(data: FilterDefinition, query: Query[T, E, Seq])(implicit session: Session): Seq[Aggregated[E, A]] = {
 
     val afterTake = data.take.fold(query)(query.take)
@@ -45,4 +46,4 @@ class OneToManyAggregator[E, A, T, TA](fromTable: Query[TA, A, Seq],
 
     FilterResult(result, count)
   }
-}
+}*/

@@ -1,4 +1,5 @@
 package org.virtuslab.beholder.consumers.json
+/*
 
 import org.virtuslab.beholder.consumers.FilterAwareConsumer
 import org.virtuslab.beholder.filters.{BeholderFilter, FilterDefinition, FilterResult}
@@ -43,3 +44,4 @@ object JsonConsumer{
       ))
     ))
 }
+*/
