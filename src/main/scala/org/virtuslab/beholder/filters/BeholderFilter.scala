@@ -1,12 +1,13 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.beholder.context.Contexted
+import org.virtuslab.beholder.consumers.StandardConsumer
+import org.virtuslab.beholder.context.{Databased, Contexted}
 import slick.lifted.{Query, Rep}
 
 /**
   * Author: Krzysztof Romanowski
   */
-trait BeholderFilter[E, T] extends (Contexted[FilterDefinition] => Query[T, E, Seq]) {
+trait BeholderFilter[E, T] extends (FilterDefinition => Databased[Query[T, E, Seq]]) {
 
   protected def filterFields: Map[String, FilterField]
 
@@ -15,4 +16,8 @@ trait BeholderFilter[E, T] extends (Contexted[FilterDefinition] => Query[T, E, S
   protected def defaultOrder(from: T): Rep[_]
 }
 
-
+object BeholderFilter{
+  implicit class consumedBeholderFilter[E, Filter <: BeholderFilter[E, _]](filter: Filter){
+    def consumed = new StandardConsumer[E, Filter](filter)
+  }
+}

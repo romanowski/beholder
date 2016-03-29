@@ -54,3 +54,5 @@ case class FilterResult[T](content: Seq[T], total: Int) {
     this(data, data.size)
   }
 }
+
+case class Aggregated[E, A](from: E, data: Set[A])

@@ -3,16 +3,17 @@ package org.virtuslab.beholder.context
 import slick.driver.JdbcDriver
 import slick.lifted.Rep
 
-trait ResultMonad[A]{
-  def flatMap[B](func: A => ResultMonad[B]): ResultMonad[B]
+import scala.concurrent.{ExecutionContext, Future}
 
-  def map[B](func: A => B): ResultMonad[B]
-}
+
 
 trait Contexted[+A] {
   val input: A
 
-  val driver: JdbcDriver
+  val jdbcDriver: JdbcDriver
 
-  def run[E](query: Rep[E]): ResultMonad[E]
+  implicit val executionContext: ExecutionContext
+
+  def run[E](query: Rep[E]): Future[E]
 }
+

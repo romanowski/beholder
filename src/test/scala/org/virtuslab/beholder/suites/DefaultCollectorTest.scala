@@ -2,9 +2,9 @@ package org.virtuslab.beholder.suites
 
 
 import org.virtuslab.beholder.BaseTest
-import org.virtuslab.beholder.consumers.{QueryConsumers, Consumer}
-import org.virtuslab.beholder.context.{StupidMonad, UnicornSimpleContext}
-import org.virtuslab.beholder.filters.{FilterResult, FilterDefinition, LightFilter}
+import org.virtuslab.beholder.consumers.{StandardConsumer, FilterConsumer}
+import org.virtuslab.beholder.context.{Databased, UnicornDatabaseContext, UnicornSimpleContext}
+import org.virtuslab.beholder.filters.{BeholderFilter, FilterResult, FilterDefinition, LightFilter}
 import org.virtuslab.beholder.view.UserMachineViewRow
 import org.virtuslab.beholder.views.BaseView
 import org.virtuslab.unicorn.LongUnicornPlay._
@@ -14,9 +14,7 @@ trait MappedCollectorTest[E, R] extends BaseTest {
   self: BaseSuite =>
 
 
-  def collector: Consumer[FilterDefinition, Query[_, E, Seq], R]
-
-  def createFilter(data: BaseFilterData): LightFilter[E, _]
+  def createConsumer(data: BaseFilterData): FilterDefinition => Databased[R]
 
   def compare(data: BaseFilterData, collected: R, expected: Seq[UserMachineViewRow], totalCounnt: Int): Unit
 
@@ -26,22 +24,28 @@ trait MappedCollectorTest[E, R] extends BaseTest {
                            totalCount: Int): Unit = {
     import data._
 
-    val context = UnicornSimpleContext(definition)
+    val consumer = createConsumer(data)
 
-    val filter = createFilter(data)
+    val context = new UnicornDatabaseContext
 
-    val result = collector.consume(filter).apply(context).asInstanceOf[StupidMonad[R]].value
-
-    compare(data, result, expected, totalCount)
+    compare(data, context.results(consumer(definition)), expected, totalCount)
   }
+}
 
+trait FilterResultTest[E] extends MappedCollectorTest[E, FilterResult[E]]{
+  self: BaseSuite =>
 }
 
 
 trait DefaultCollectorTest extends MappedCollectorTest[UserMachineViewRow, FilterResult[UserMachineViewRow]] { //TODO better name
   self: BaseSuite =>
-  override def collector: Consumer[FilterDefinition, Query[_, UserMachineViewRow, Seq], FilterResult[UserMachineViewRow]] =
-    QueryConsumers.simplePagination
+
+
+
+  def createFilter(data: BaseFilterData): LightFilter[UserMachineViewRow, _]
+
+
+  override def createConsumer(data: BaseFilterData) = StandardConsumer(createFilter(data))
 
   override def compare(data: BaseFilterData,
                        collected: FilterResult[UserMachineViewRow],

@@ -1,6 +1,6 @@
 package org.virtuslab.beholder.filters
 
-import org.virtuslab.beholder.context.Contexted
+import org.virtuslab.beholder.context.{Databased, Contexted}
 import slick.driver.JdbcDriver
 
 
@@ -14,8 +14,9 @@ trait LightFilter[E, T] extends BeholderFilter[E, T] with FilterJoins[E, T] {
   //################ Public API #####################
 
 
-  override def apply(definition: Contexted[FilterDefinition]): Query[T, E, Seq] = {
-    filterOnQuery(definition.input.constrains, definition.driver).sortBy(ordering(definition.input))
+  override def apply(definition: FilterDefinition): Databased[Query[T, E, Seq]] = Databased.inContext{
+    driver =>
+      filterOnQuery(definition.constrains, driver).sortBy(ordering(definition))
   }
 
 
