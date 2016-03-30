@@ -8,13 +8,17 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future, ExecutionContext}
 
 
-class UnicornDatabaseContext(implicit session: driver.api.Session) extends DatabaseContext{
+case class NoOp[+E](v: E)
+
+class UnicornDatabaseContext(implicit session: driver.api.Session) extends DatabaseContextImpl[NoOp]{
+
+  override protected def resultFlatMap[A, B](on: NoOp[A])(func: (A) => NoOp[B]): NoOp[B] = func(on.v)
+
+  override def apply[E](e: E): NoOp[E] = NoOp.apply(e)
+
+  override protected def resultMap[A, B](on: NoOp[A])(func: (A) => B): NoOp[B] = NoOp(func(on.v))
+
+  override def runQuery[E](q: Rep[E]): NoOp[E] = NoOp(q.run)
+
   override val jdbcDriver: JdbcDriver = driver
-
-  override def run[E](query: Rep[E]): Future[E] = Future(query.run)
-
-  override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
-
-  def results[R](from: Databased[R]): R =
-    Await.result(from.futureFunc(this), Duration.Inf) //NoOp - all is already computed
 }

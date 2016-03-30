@@ -2,8 +2,8 @@ package org.virtuslab.beholder.suites
 
 
 import org.virtuslab.beholder.BaseTest
-import org.virtuslab.beholder.consumers.{StandardConsumer, FilterConsumer}
-import org.virtuslab.beholder.context.{Databased, UnicornDatabaseContext, UnicornSimpleContext}
+import org.virtuslab.beholder.consumers.StandardConsumer
+import org.virtuslab.beholder.context.{UnicornDatabaseContext, Databased}
 import org.virtuslab.beholder.filters.{BeholderFilter, FilterResult, FilterDefinition, LightFilter}
 import org.virtuslab.beholder.view.UserMachineViewRow
 import org.virtuslab.beholder.views.BaseView
@@ -28,7 +28,7 @@ trait MappedCollectorTest[E, R] extends BaseTest {
 
     val context = new UnicornDatabaseContext
 
-    compare(data, context.results(consumer(definition)), expected, totalCount)
+    compare(data, context.runDatabased(consumer(definition)).v, expected, totalCount)
   }
 }
 

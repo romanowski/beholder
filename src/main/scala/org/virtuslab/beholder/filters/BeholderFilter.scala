@@ -1,7 +1,7 @@
 package org.virtuslab.beholder.filters
 
 import org.virtuslab.beholder.consumers.StandardConsumer
-import org.virtuslab.beholder.context.{Databased, Contexted}
+import org.virtuslab.beholder.context.Databased
 import slick.lifted.{Query, Rep}
 
 /**
