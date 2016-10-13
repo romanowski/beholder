@@ -1,0 +1,33 @@
+full.time	65956057989
+classpathCreation.time	103047606
+macros.counts	8
+phases.times
+	jvm	17408884754
+	flatten	425825026
+	explicitouter	563912034
+	delambdafy	30455425
+	uncurry	2142468400
+	erasure	3538786050
+	parser	1747986638
+	namer	614299479
+	constructors	871585751
+	typer	25500532311
+	xsbt-analyzer	174492351
+	tailcalls	457952296
+	lazyvals	155760951
+	lambdalift	849368217
+	refchecks	1610543161
+	posterasure	329218871
+	superaccessors	362061107
+	specialize	1921647363
+	cleanup	120270595
+	patmat	2859523372
+	extmethods	157146455
+	pickler	265661304
+	icode	2374795596
+	packageobjects	37297225
+	mixin	1335492712
+postCompilation.time	47476046
+packagesLoading.time	2241511368
+macros.times	688995782
+classesLoading.time	6905730312

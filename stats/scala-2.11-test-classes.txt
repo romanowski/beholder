@@ -1,0 +1,39 @@
+full.time	41776651212
+classpathCreation.time	12460641
+macros.counts
+	slick.lifted.TableQuery.apply	21
+	slick.lifted.MappedToBase.mappedToIsomorphism	255
+	scala.reflect.materializeClassTag	84
+phases.times
+	jvm	19986310856
+	flatten	62807639
+	explicitouter	596914859
+	delambdafy	19498914
+	uncurry	352060502
+	erasure	4803995208
+	parser	164969197
+	namer	88855570
+	constructors	124642301
+	typer	9106697041
+	xsbt-analyzer	144312923
+	tailcalls	24017632
+	lazyvals	58905309
+	lambdalift	158622579
+	refchecks	238145058
+	posterasure	108428861
+	superaccessors	163964033
+	specialize	2205285444
+	cleanup	113159053
+	patmat	239575744
+	extmethods	89656306
+	pickler	78486056
+	icode	454032910
+	packageobjects	8320578
+	mixin	2354338887
+postCompilation.time	22188723
+packagesLoading.time	1878350201
+macros.times
+	slick.lifted.TableQuery.apply	256863169
+	slick.lifted.MappedToBase.mappedToIsomorphism	815115044
+	scala.reflect.materializeClassTag	118466366
+classesLoading.time	8627917072

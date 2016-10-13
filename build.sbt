@@ -4,7 +4,7 @@ name := "beholder"
 
 version := "0.2.10-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.9-SNAPSHOT"
 
 resolvers += Resolver.typesafeRepo("releases")
 

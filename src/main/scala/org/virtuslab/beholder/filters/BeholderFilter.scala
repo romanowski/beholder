@@ -1,12 +1,11 @@
 package org.virtuslab.beholder.filters
 
 import slick.driver.JdbcDriver
-import slick.lifted.{Query, Rep}
-
+import slick.lifted.{ Query, Rep }
 
 /**
-  * Author: Krzysztof Romanowski
-  */
+ * Author: Krzysztof Romanowski
+ */
 trait BeholderFilter[E, T] extends (FilterDefinition => Query[T, E, Seq]) {
 
   protected def filterFields: Map[String, FilterField]
@@ -18,8 +17,8 @@ trait BeholderFilter[E, T] extends (FilterDefinition => Query[T, E, Seq]) {
   val driver: JdbcDriver
 }
 
-object BeholderFilter{
-  implicit class consumedBeholderFilter[E](filter: BeholderFilter[E, _]){
+object BeholderFilter {
+  implicit class consumedBeholderFilter[E](filter: BeholderFilter[E, _]) {
     def consumed = new StandardConsumer[E](filter)
   }
 }

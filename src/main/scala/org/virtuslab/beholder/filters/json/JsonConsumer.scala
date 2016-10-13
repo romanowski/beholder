@@ -6,10 +6,9 @@ import slick.dbio.DBIO
 
 import scala.concurrent.ExecutionContext
 
-
 //TODO #26 Make this part of dsl
 class JsonConsumer[E: Writes](override val filter: BeholderFilter[E, _] with JsonFilter)
-  extends FilterConsumer[E, BeholderFilter[E, _] with JsonFilter, JsValue]{
+    extends FilterConsumer[E, BeholderFilter[E, _] with JsonFilter, JsValue] {
 
   private val stanrdResults = new StandardConsumer(filter)
 
@@ -20,12 +19,10 @@ class JsonConsumer[E: Writes](override val filter: BeholderFilter[E, _] with Jso
   }
 }
 
-
-object JsonConsumer{
+object JsonConsumer {
   import JsonKeys.Results._
 
-  def writeResults[E: Writes](definitionJson: JsValue)
-                     (results: FilterResult[E]): JsValue =
+  def writeResults[E: Writes](definitionJson: JsValue)(results: FilterResult[E]): JsValue =
     JsObject(Seq(
       filterKey -> definitionJson,
       resultKey -> JsObject(Seq(

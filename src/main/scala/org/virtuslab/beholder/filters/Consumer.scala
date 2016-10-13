@@ -3,8 +3,7 @@ package org.virtuslab.beholder.filters
 import slick.dbio.DBIO
 
 import scala.concurrent.ExecutionContext
-import scala.language.{higherKinds, implicitConversions}
-
+import scala.language.{ higherKinds, implicitConversions }
 
 trait FilterConsumer[E, Filter <: BeholderFilter[E, _], R] {
   def filter: Filter
@@ -13,7 +12,7 @@ trait FilterConsumer[E, Filter <: BeholderFilter[E, _], R] {
 }
 
 case class StandardConsumer[E](override val filter: BeholderFilter[E, _])
-  extends FilterConsumer[E, BeholderFilter[E, _], FilterResult[E]]{
+    extends FilterConsumer[E, BeholderFilter[E, _], FilterResult[E]] {
 
   override def consume(filterDefinition: FilterDefinition)(implicit ec: ExecutionContext): DBIO[FilterResult[E]] = {
     val query = filter.apply(filterDefinition)
@@ -23,7 +22,7 @@ case class StandardConsumer[E](override val filter: BeholderFilter[E, _])
 
     import filter.driver.api._
 
-    for{
+    for {
       list <- afterTake.result
       size <- query.length.result
     } yield FilterResult(list, size)

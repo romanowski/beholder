@@ -5,7 +5,6 @@ import org.virtuslab.unicorn.LongUnicornPlay
 import play.api.libs.json._
 import org.virtuslab.unicorn.LongUnicornPlay.driver.api._
 
-
 trait JsonFilter {
 
   protected def nested: Map[String, JsonFilter]
